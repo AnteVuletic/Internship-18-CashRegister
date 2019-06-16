@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using CashierRegister.Data.Entities;
 using CashierRegister.Domain.Helpers;
@@ -57,6 +59,16 @@ namespace CashierRegister.Web
 
             services.AddSingleton(Configuration);
             services.AddSingleton<JwtHelper>();
+
+            var assembly = Assembly.GetExecutingAssembly().GetTypes().Where(type => 
+                type.IsClass && 
+                type.Namespace == "Domain.Repositories.Implementations" &&
+                type.IsPublic);
+
+            foreach (var type in assembly)
+            {
+                services.AddScoped(type.GetInterface($"I{type.Name}"), type);
+            }
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

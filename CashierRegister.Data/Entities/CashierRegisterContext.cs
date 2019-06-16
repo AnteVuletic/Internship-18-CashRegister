@@ -15,6 +15,7 @@ namespace CashierRegister.Data.Entities
 
         public DbSet<Cashier> Cashiers { get; set; }
         public DbSet<CashRegister> CashRegisters { get; set; }
+        public DbSet<CashRegisterCashier> CashRegisterCashiers { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Receipt> Receipts { get; set; }
         public DbSet<ReceiptProduct> ReceiptProducts { get; set; }
