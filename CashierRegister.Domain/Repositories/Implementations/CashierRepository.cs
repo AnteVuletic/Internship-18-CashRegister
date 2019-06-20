@@ -12,7 +12,7 @@ namespace CashierRegister.Domain.Repositories.Implementations
     {
         public CashierRepository(CashierRegisterContext cashierRegisterContext) : base(cashierRegisterContext){}
 
-        public Cashier CreateCashier(string username)
+        public void CreateCashier(string username)
         {
             var doesCashierExist = _dbCashierRegisterContext.Cashiers.Any(cashier =>
                 string.Equals(cashier.Username, username, StringComparison.CurrentCultureIgnoreCase));
@@ -26,11 +26,16 @@ namespace CashierRegister.Domain.Repositories.Implementations
             };
             _dbCashierRegisterContext.Cashiers.Add(newCashier);
             _dbCashierRegisterContext.SaveChanges();
-
-            return newCashier;
         }
 
-        public Cashier ReadCashier(int id)
+        public IQueryable<Cashier> ReadCashier()
+        {
+            var cashiers = _dbCashierRegisterContext.Cashiers;
+
+            return cashiers;
+        }
+
+        private Cashier ReadCashier(int id)
         {
             var cashierWithId = _dbCashierRegisterContext.Cashiers.Find(id);
 

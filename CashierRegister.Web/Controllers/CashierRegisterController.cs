@@ -36,9 +36,17 @@ namespace CashierRegister.Web.Controllers
         private readonly IReceiptRepository _receiptRepository;
 
         [HttpPost]
-        public Cashier CreateCashier(string username)
+        public IActionResult CreateCashier(string username)
         {
-            return _cashierRepository.CreateCashier(username);
+            try
+            {
+                _cashierRepository.CreateCashier(username);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpPost]
@@ -48,9 +56,17 @@ namespace CashierRegister.Web.Controllers
         }
 
         [HttpPost]
-        public Product CreateProduct(string name, int price)
+        public IActionResult CreateProduct(string name, int price)
         {
-            return _productRepository.CreateProduct(name, price);
+            try
+            {
+                _productRepository.CreateProduct(name, price);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpPost]
@@ -114,10 +130,10 @@ namespace CashierRegister.Web.Controllers
             return NotFound();
         }
 
-        [HttpGet("{id}")]
-        public Cashier ReadCashier(int id)
+        [HttpGet]
+        public ICollection<Cashier> ReadCashier()
         {
-            return _cashierRepository.ReadCashier(id);
+            return _cashierRepository.ReadCashier().ToList();
         }
 
         [HttpGet("{id}")]

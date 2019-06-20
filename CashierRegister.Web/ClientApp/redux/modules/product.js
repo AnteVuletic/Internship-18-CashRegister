@@ -83,7 +83,7 @@ const reducer = (state = initialState, action ) =>{
         }
         case GET_PRODUCTS_SUCCESS:{
             return {
-                ...state,
+                products: action.products,
                 loading: false,
                 error: null
             }

@@ -12,7 +12,7 @@ namespace CashierRegister.Domain.Repositories.Implementations
     {
         public ProductRepository(CashierRegisterContext cashierRegisterContext) : base(cashierRegisterContext) {}
 
-        public Product CreateProduct(string name, int price)
+        public void CreateProduct(string name, int price)
         {
             var hasProductName = _dbCashierRegisterContext.Products.Any(product =>
                 string.Equals(product.Name, name, StringComparison.CurrentCultureIgnoreCase));
@@ -29,11 +29,9 @@ namespace CashierRegister.Domain.Repositories.Implementations
 
             _dbCashierRegisterContext.Products.Add(newProduct);
             _dbCashierRegisterContext.SaveChanges();
-
-            return newProduct;
         }
 
-        public Product ReadProduct(Guid id)
+        private Product ReadProduct(Guid id)
         {
             var productInQuestion = _dbCashierRegisterContext.Products.Find(id);
 

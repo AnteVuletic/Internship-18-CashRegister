@@ -2,7 +2,10 @@ import { endpointBase } from '../constants/constants';
 
 export const createCashier = (username) => {
     return fetch(`${endpointBase}/CreateCashier`,{
-        username
+        method: 'POST',
+        body: {
+            username
+        }
     }).then(response => response.json);
 }
 
@@ -12,7 +15,17 @@ export const deleteCashier = (id) => {
     }).then(response => response.json());
 }
 
-export const readCashier = (id) => {
-    return fetch(`${endpointBase}/ReadCashier/${id}`)
+export const readCashier = () => {
+    return fetch(`${endpointBase}/ReadCashier`)
         .then(response => response.json());
+}
+
+export const editCashierPassword = (id, password) =>{
+    return fetch(`${endpointBase}/EditCashierPassowrd`,{
+        method: 'POST',
+        body: {
+            id,
+            password
+        }
+    })
 }

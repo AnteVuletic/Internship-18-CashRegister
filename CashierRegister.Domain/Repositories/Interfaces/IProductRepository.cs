@@ -8,8 +8,7 @@ namespace CashierRegister.Domain.Repositories.Interfaces
 {
     public interface IProductRepository
     {
-        Product CreateProduct(string name, int price);
-        Product ReadProduct(Guid id);
+        void CreateProduct(string name, int price);
         IQueryable<Product> ReadProducts();
         bool EditProduct(Guid id, string name, int price);
         bool DeleteProduct(Guid id);
