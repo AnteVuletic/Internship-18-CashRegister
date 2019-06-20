@@ -1,0 +1,1 @@
+export const endpointBase = "https://localhost:44343/api/CashierRegister";
