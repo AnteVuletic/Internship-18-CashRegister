@@ -50,9 +50,17 @@ namespace CashierRegister.Web.Controllers
         }
 
         [HttpPost]
-        public CashRegister CreateCashRegister(string location)
+        public IActionResult CreateCashRegister(string location)
         {
-            return _cashRegisterRepository.RegisterCashRegister(location);
+            try
+            {
+                _cashRegisterRepository.RegisterCashRegister(location);
+                return Ok();
+            }
+            catch(Exception)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpPost]
@@ -92,20 +100,24 @@ namespace CashierRegister.Web.Controllers
         public IActionResult DeleteCashier(int id)
         {
             if (_cashierRepository.DeleteCashier(id))
-                Ok();
+                return Ok();
             return BadRequest();
         }
 
         [HttpDelete("{id}")]
-        public bool DeleteCashRegister(int id)
+        public IActionResult DeleteCashRegister(int id)
         {
-            return _cashRegisterRepository.DeleteCashRegister(id);
+            if(_cashRegisterRepository.DeleteCashRegister(id))
+                return Ok();
+            return BadRequest();
         }
 
         [HttpDelete("{id}")]
-        public bool DeleteProduct(Guid id)
+        public IActionResult DeleteProduct(Guid id)
         {
-            return _productRepository.DeleteProduct(id);
+            if (_productRepository.DeleteProduct(id))
+                return Ok();
+            return BadRequest();
         }
 
         [HttpDelete("{id}")]
@@ -136,10 +148,10 @@ namespace CashierRegister.Web.Controllers
             return _cashierRepository.ReadCashier().ToList();
         }
 
-        [HttpGet("{id}")]
-        public CashRegister ReadCashRegister(int id)
+        [HttpGet]
+        public ICollection<CashRegister> ReadCashRegister()
         {
-            return _cashRegisterRepository.ReadCashRegister(id);
+            return _cashRegisterRepository.ReadCashRegister().ToList();
         }
 
         [HttpGet("{id}")]

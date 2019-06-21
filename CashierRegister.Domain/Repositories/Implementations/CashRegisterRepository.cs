@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using CashierRegister.Data.Entities;
 using CashierRegister.Data.Entities.Models;
@@ -11,7 +12,7 @@ namespace CashierRegister.Domain.Repositories.Implementations
     {
         public CashRegisterRepository(CashierRegisterContext cashierRegisterContext) : base(cashierRegisterContext){}
 
-        public CashRegister RegisterCashRegister(string location)
+        public void RegisterCashRegister(string location)
         {
             var newCashRegister = new CashRegister
             {
@@ -19,11 +20,11 @@ namespace CashierRegister.Domain.Repositories.Implementations
             };
             _dbCashierRegisterContext.CashRegisters.Add(newCashRegister);
             _dbCashierRegisterContext.SaveChanges();
-
-            return newCashRegister;
         }
 
-        public CashRegister ReadCashRegister(int id)
+        public IQueryable<CashRegister> ReadCashRegister() => _dbCashierRegisterContext.CashRegisters;
+
+        private CashRegister ReadCashRegister(int id)
         {
             var cashRegisterWithId = _dbCashierRegisterContext.CashRegisters.Find(id);
             
