@@ -1,10 +1,15 @@
-import { endpointBase } from '../constants/constants';
+import { ENDPOINTS_BY_CONTROLLER } from '../constants/constants';
+
+const endpointBase = ENDPOINTS_BY_CONTROLLER.CASHIER_REGISTER;
 
 export const createCashRegister = (location) => {
     return fetch(`${endpointBase}/CreateCashRegister`, {
         method: 'POST',
-        body: {
+        body: JSON.stringify({
             location
+        }),
+        headers: {
+            "Content-Type": "application/json"
         }
     }).then(response => response.json() );
 }

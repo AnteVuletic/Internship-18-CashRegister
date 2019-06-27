@@ -33,12 +33,12 @@ export const getCashiers = () => dispatch =>{
         });
 }
 
-export const createCashier = (username) => dispatch =>{
+export const createCashier = (username, password) => dispatch =>{
     dispatch({
         type: POST_CASHIER
     });
 
-    return CashierService.createCashier(username)
+    return CashierService.createCashier(username, password)
         .then(response => dispatch({ type: POST_CASHIER_SUCCES }))
         .catch(error =>{
             dispatch(errorActions.showError("Error creating cashier"));

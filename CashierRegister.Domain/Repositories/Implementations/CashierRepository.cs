@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using CashierRegister.Data.Entities;
 using CashierRegister.Data.Entities.Models;
+using CashierRegister.Domain.Helpers;
 using CashierRegister.Domain.Repositories.Interfaces;
 
 namespace CashierRegister.Domain.Repositories.Implementations
@@ -12,7 +11,7 @@ namespace CashierRegister.Domain.Repositories.Implementations
     {
         public CashierRepository(CashierRegisterContext cashierRegisterContext) : base(cashierRegisterContext){}
 
-        public void CreateCashier(string username)
+        public void CreateCashier(string username, string password)
         {
             var doesCashierExist = _dbCashierRegisterContext.Cashiers.Any(cashier =>
                 string.Equals(cashier.Username, username, StringComparison.CurrentCultureIgnoreCase));
@@ -22,7 +21,8 @@ namespace CashierRegister.Domain.Repositories.Implementations
 
             var newCashier = new Cashier
             {
-                Username = username
+                Username = username,
+                Password =  HashHelper.Hash(password)
             };
             _dbCashierRegisterContext.Cashiers.Add(newCashier);
             _dbCashierRegisterContext.SaveChanges();
@@ -63,6 +63,31 @@ namespace CashierRegister.Domain.Repositories.Implementations
             _dbCashierRegisterContext.SaveChanges();
 
             return true;
+        }
+
+        private Cashier GetUserByUsername(string username)
+        {
+            try
+            {
+                var userWithUsername = _dbCashierRegisterContext.Cashiers.Single(cashier =>
+                    string.Equals(cashier.Username, username, StringComparison.CurrentCultureIgnoreCase));
+                return userWithUsername;
+            }
+            catch (Exception)
+            {
+                throw new Exception("User not exists or more then one exists");
+            }
+        }
+
+        public Cashier AuthorizeUser(string username, string password)
+        {
+            var userWithUsername = GetUserByUsername(username);
+            var isPasswordCorrect = HashHelper.ValidatePassword(password, userWithUsername.Password);
+
+            if(!isPasswordCorrect)
+                throw new Exception("User not authorized");
+
+            return userWithUsername;
         }
     }
 }

@@ -1,10 +1,16 @@
-import { endpointBase } from '../constants/constants';
+import { ENDPOINTS_BY_CONTROLLER } from '../constants/constants';
 
-export const createCashier = (username) => {
+const endpointBase = ENDPOINTS_BY_CONTROLLER.CASHIER;
+
+export const createCashier = (username, password) => {
     return fetch(`${endpointBase}/CreateCashier`,{
         method: 'POST',
-        body: {
-            username
+        body: JSON.stringify({
+            username,
+            password
+        }),
+        headers: {
+            "Content-Type": "application/json"
         }
     }).then(response => response.json);
 }
@@ -23,9 +29,12 @@ export const readCashier = () => {
 export const editCashierPassword = (id, password) =>{
     return fetch(`${endpointBase}/EditCashierPassowrd`,{
         method: 'POST',
-        body: {
+        body: JSON.stringify({
             id,
             password
+        }),
+        headers: {
+            "Content-Type": "application/json"
         }
     })
 }

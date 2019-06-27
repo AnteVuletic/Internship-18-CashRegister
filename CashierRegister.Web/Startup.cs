@@ -39,10 +39,10 @@ namespace CashierRegister.Web
                         ValidateIssuer = true,
                         ValidIssuer = Configuration["JWT:Issuer"],
                         ValidateAudience = true,
-                        ValidAudience = Configuration["JWT:AudienceId"],
+                        ValidAudience = Configuration["JWT:Issuer"],
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey =
-                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:AudienceSecret"]))
+                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"]))
                     };
                 });
 

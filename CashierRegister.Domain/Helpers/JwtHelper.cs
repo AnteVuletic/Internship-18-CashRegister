@@ -15,8 +15,8 @@ namespace CashierRegister.Domain.Helpers
         public JwtHelper(IConfiguration configuration)
         {
             _issuer = configuration["JWT:Issuer"];
-            _audienceId = configuration["JWT:AudienceId"];
-            _secret = Encoding.UTF8.GetBytes(configuration["JWT:AudienceSecret"]);
+            _audienceId = configuration["JWT:Issuer"];
+            _secret = Encoding.UTF8.GetBytes(configuration["JWT:Key"]);
         }
 
         private readonly string _issuer;

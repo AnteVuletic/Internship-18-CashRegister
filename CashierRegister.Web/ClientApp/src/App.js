@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Switch, Route, Redirect } from "react-router-dom";
-import Error from "./components/Error";
+import Error from "./components/Error/Error";
 
 
 export default class App extends Component {
@@ -9,7 +9,7 @@ export default class App extends Component {
   render () {
     return (
       <Switch>
-
+        
         <Error />
       </Switch>
     );
