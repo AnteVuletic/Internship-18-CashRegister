@@ -1,4 +1,4 @@
-import * as CashierService from '../services/CashierService';
+import * as CashierService from '../services/cashierService';
 import * as errorActions from "./error";
 
 const GET_CASHIERS = "GET_CASHIERS";
@@ -39,7 +39,7 @@ export const createCashier = (username, password) => dispatch =>{
     });
 
     return CashierService.createCashier(username, password)
-        .then(response => dispatch({ type: POST_CASHIER_SUCCES }))
+        .then(response => dispatch({ type: POST_CASHIER_SUCCESS }))
         .catch(error =>{
             dispatch(errorActions.showError("Error creating cashier"));
             return dispatch({ type:  POST_CASHIER_FAIL, error });
@@ -157,6 +157,11 @@ const reducer = (state = initialState, action ) =>{
                 ...state,
                 loading: false,
                 error: action.error
+            }
+        }
+        default: {
+            return {
+                ...state
             }
         }
     }

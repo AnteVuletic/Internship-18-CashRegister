@@ -1,4 +1,4 @@
-const ENDPOINT_BASE = "https://localhost:44343/api/";
+const ENDPOINT_BASE = "https://localhost:44343/api";
 
 export const ENDPOINTS_BY_CONTROLLER = {
     CASHIER_REGISTER: `${ENDPOINT_BASE}/CashierRegister`,

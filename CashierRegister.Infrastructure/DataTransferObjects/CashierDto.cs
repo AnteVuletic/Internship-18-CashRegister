@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace CashierRegister.Data.Entities.Models
+namespace CashierRegister.Infrastructure.DataTransferObjects
 {
-    public class Cashier
+    public class CashierDto
     {
-        public int Id { get; set; }
-        [MinLength(3),MaxLength(10)]
         [JsonProperty("username")]
         public string Username { get; set; }
         [JsonProperty("password")]
         public string Password { get; set; }
-        public ICollection<CashRegisterCashier> Cashiers { get; set; }
     }
 }

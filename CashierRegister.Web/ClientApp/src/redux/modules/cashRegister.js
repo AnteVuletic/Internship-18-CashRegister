@@ -1,4 +1,4 @@
-import * as CashRegisterService from '../services/CashRegisterService';
+import * as CashRegisterService from '../services/cashRegisterService';
 import * as errorActions from "./error";
 
 const GET_CASHREGISTERS = "GET_CASHREGISTERS";
@@ -119,6 +119,11 @@ const reducer = (state = initialState, action ) =>{
                 ...state,
                 loading: false,
                 error: action.error
+            }
+        }
+        default: {
+            return {
+                ...state
             }
         }
     }

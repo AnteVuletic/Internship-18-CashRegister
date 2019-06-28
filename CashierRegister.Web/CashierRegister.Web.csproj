@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CashierRegister.Data\CashierRegister.Data.csproj" />
     <ProjectReference Include="..\CashierRegister.Domain\CashierRegister.Domain.csproj" />
+    <ProjectReference Include="..\CashierRegister.Infrastructure\CashierRegister.Infrastructure.csproj" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

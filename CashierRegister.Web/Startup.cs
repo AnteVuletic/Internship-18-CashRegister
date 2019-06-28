@@ -1,8 +1,9 @@
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using CashierRegister.Data.Entities;
-using CashierRegister.Domain.Helpers;
+using CashierRegister.Infrastructure.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -60,12 +61,17 @@ namespace CashierRegister.Web
             services.AddSingleton(Configuration);
             services.AddSingleton<JwtHelper>();
 
-            var assembly = Assembly.GetExecutingAssembly().GetTypes().Where(type => 
-                type.IsClass && 
-                type.Namespace == "Domain.Repositories.Implementations" &&
-                type.IsPublic);
+            var domainAssemblyReflection = Assembly.GetEntryAssembly().GetReferencedAssemblies()
+                .First(asm => asm.FullName.Contains("CashierRegister.Domain"));
 
-            foreach (var type in assembly)
+            var actualAssembly = Assembly.Load(domainAssemblyReflection.Name)
+                .GetTypes()
+                .Where(type =>
+                    type.IsClass &&
+                    type.IsPublic &&
+                    type.Namespace.Contains("CashierRegister.Domain.Repositories.Implementations"));
+
+            foreach (var type in actualAssembly)
             {
                 services.AddScoped(type.GetInterface($"I{type.Name}"), type);
             }

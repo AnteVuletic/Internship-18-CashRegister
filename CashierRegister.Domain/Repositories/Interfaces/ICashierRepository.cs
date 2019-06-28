@@ -9,7 +9,7 @@ namespace CashierRegister.Domain.Repositories.Interfaces
 {
     public interface ICashierRepository
     {
-        void CreateCashier(string username, string password);
+        Cashier CreateCashier(string username, string password);
         IQueryable<Cashier> ReadCashier();
         bool DeleteCashier(int id);
         bool EditCashierPassword(int id, string password);

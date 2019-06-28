@@ -64,7 +64,7 @@ export const postProduct = (productId, name, price) => dispatch =>{
         type: POST_PRODUCT
     });
 
-    return ProductService.postProduct(productId, name, price)
+    return ProductService.createProduct(productId, name, price)
         .then(response => dispatch({ type: POST_PRODUCT_SUCCESS, product: response }))
         .catch(error => {
             dispatch(errorActions.showError("Error posting product"));
@@ -156,6 +156,11 @@ const reducer = (state = initialState, action ) =>{
                 ...state,
                 loading: false,
                 error: action.error
+            }
+        }
+        default: {
+            return {
+                ...state
             }
         }
     }

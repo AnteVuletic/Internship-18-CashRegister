@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CashierRegister.Data.Entities.Models;
 using CashierRegister.Domain.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +12,7 @@ namespace CashierRegister.Web.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class ReceiptController : ControllerBase
     {
         public ReceiptController(
@@ -51,7 +53,7 @@ namespace CashierRegister.Web.Controllers
         }
 
         [HttpGet("{id}")]
-        public ICollection<Receipt> ReceiptsByShiftId(int id)
+        public ICollection<Receipt> ReceiptsByShift(int id)
         {
             var receipts = _receiptRepository.ReadReceiptByCashRegisterCashierId(id).ToList();
 

@@ -2,8 +2,8 @@
 using System.Linq;
 using CashierRegister.Data.Entities;
 using CashierRegister.Data.Entities.Models;
-using CashierRegister.Domain.Helpers;
 using CashierRegister.Domain.Repositories.Interfaces;
+using CashierRegister.Infrastructure.Helpers;
 
 namespace CashierRegister.Domain.Repositories.Implementations
 {
@@ -11,7 +11,7 @@ namespace CashierRegister.Domain.Repositories.Implementations
     {
         public CashierRepository(CashierRegisterContext cashierRegisterContext) : base(cashierRegisterContext){}
 
-        public void CreateCashier(string username, string password)
+        public Cashier CreateCashier(string username, string password)
         {
             var doesCashierExist = _dbCashierRegisterContext.Cashiers.Any(cashier =>
                 string.Equals(cashier.Username, username, StringComparison.CurrentCultureIgnoreCase));
@@ -26,6 +26,8 @@ namespace CashierRegister.Domain.Repositories.Implementations
             };
             _dbCashierRegisterContext.Cashiers.Add(newCashier);
             _dbCashierRegisterContext.SaveChanges();
+
+            return GetUserByUsername(username);
         }
 
         public IQueryable<Cashier> ReadCashier()

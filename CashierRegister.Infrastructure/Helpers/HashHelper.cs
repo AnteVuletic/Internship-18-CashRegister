@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace CashierRegister.Domain.Helpers
+namespace CashierRegister.Infrastructure.Helpers
 {
     public static class HashHelper
     {

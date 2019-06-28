@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { hideError } from "./../../redux/modules/error";
+import { hideError } from "../../redux/modules/error";
 
 const Error = ({ isVisible, message, onClose }) => {
   if (!isVisible) {

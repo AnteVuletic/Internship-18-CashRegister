@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace CashierRegister.Domain.Helpers
+namespace CashierRegister.Infrastructure.Helpers
 {
     public class JwtHelper
     {
@@ -30,18 +30,17 @@ namespace CashierRegister.Domain.Helpers
             {
                 {"iss", _issuer},
                 {"aud", _audienceId},
-                {"exp", (currentSeconds + 300).ToString(CultureInfo.InvariantCulture) },
-                {"cashierid", userToGenerateFor.Id.ToString()},
-                {"username", $"{userToGenerateFor.Username}"}
+                {"exp", (currentSeconds + 300).ToString(CultureInfo.InvariantCulture)},
+                {"cashierId", userToGenerateFor.Id.ToString() },
+                {"username", userToGenerateFor.Username }
             };
 
             return JWT.Encode(payload, _secret, JwsAlgorithm.HS256);
         }
-
         public int GetUserIdFromToken(string token)
         {
             var decodedJObjectToken = (JObject)JsonConvert.DeserializeObject(JWT.Decode(token, _secret));
-            var didParsingSucceed = int.TryParse(decodedJObjectToken["cashierid"].ToString(), out int userId);
+            var didParsingSucceed = int.TryParse(decodedJObjectToken["cashierId"].ToString(), out int userId);
             if (didParsingSucceed)
                 return userId;
             return 0;
@@ -62,8 +61,8 @@ namespace CashierRegister.Domain.Helpers
                 {"iss", decodedJObjectToken["iss"].ToString() },
                 {"aud", decodedJObjectToken["aud"].ToString()},
                 {"exp", (currentSeconds + 300).ToString(CultureInfo.InvariantCulture) },
-                {"cashierid", decodedJObjectToken["cashierid"].ToString()},
-                {"username", decodedJObjectToken["username"].ToString()},
+                {"cashierId", decodedJObjectToken["cashierId"].ToString()},
+                {"username", decodedJObjectToken["username"].ToString()}
             };
 
             return JWT.Encode(payload, _secret, JwsAlgorithm.HS256);

@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.539
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CashierRegister.Web", "CashierRegister.Web\CashierRegister.Web.csproj", "{9DBB7E4D-B073-4E38-84C6-08F778842D81}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CashierRegister.Web", "CashierRegister.Web\CashierRegister.Web.csproj", "{9DBB7E4D-B073-4E38-84C6-08F778842D81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CashierRegister.Data", "CashierRegister.Data\CashierRegister.Data.csproj", "{1800A631-C04D-4B28-B7E5-FD5CC4AE9705}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CashierRegister.Data", "CashierRegister.Data\CashierRegister.Data.csproj", "{1800A631-C04D-4B28-B7E5-FD5CC4AE9705}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CashierRegister.Domain", "CashierRegister.Domain\CashierRegister.Domain.csproj", "{257E682A-CDE2-4FEB-ACE9-4CA7085D1424}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CashierRegister.Domain", "CashierRegister.Domain\CashierRegister.Domain.csproj", "{257E682A-CDE2-4FEB-ACE9-4CA7085D1424}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CashierRegister.Infrastructure", "CashierRegister.Infrastructure\CashierRegister.Infrastructure.csproj", "{770F4CDD-4BC6-46E2-8DF1-AA5B66154636}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{257E682A-CDE2-4FEB-ACE9-4CA7085D1424}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{257E682A-CDE2-4FEB-ACE9-4CA7085D1424}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{257E682A-CDE2-4FEB-ACE9-4CA7085D1424}.Release|Any CPU.Build.0 = Release|Any CPU
+		{770F4CDD-4BC6-46E2-8DF1-AA5B66154636}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{770F4CDD-4BC6-46E2-8DF1-AA5B66154636}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{770F4CDD-4BC6-46E2-8DF1-AA5B66154636}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{770F4CDD-4BC6-46E2-8DF1-AA5B66154636}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
