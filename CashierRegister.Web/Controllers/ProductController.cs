@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CashierRegister.Data.Entities.Models;
 using CashierRegister.Domain.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,6 +13,7 @@ namespace CashierRegister.Web.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [EnableCors("AnyOrigin")]
     [Authorize]
     public class ProductController : ControllerBase
     {

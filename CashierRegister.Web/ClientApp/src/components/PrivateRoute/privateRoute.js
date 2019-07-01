@@ -1,14 +1,15 @@
 import React from 'react';
-import { Route, Redirect } from "react-router-dom";
+import { Route } from "react-router-dom";
 import { connect } from 'react-redux';
+import LoginPage from '../LoginPage/loginPage';
 
-const PrivateRoute = ({ component: Component,identity , ...rest }) =>{
+const PrivateRoute = ({ path, exactPath, component: Component, identity }) =>{
     return(
-        <Route {...rest}
-            render={
+        <Route path={path} exactPath={exactPath}
+            render={(props) =>
                 identity.isAuthorized ?
-                <Component {...rest} /> :
-                <Redirect to='/login' />
+                <Component {...props} /> :
+                <LoginPage {...props} />
              } 
         />
     )

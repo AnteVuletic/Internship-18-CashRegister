@@ -1,16 +1,22 @@
 import * as LoginService from '../services/loginService';
 
-export const fetchInterceptor = (endpoint, details) => {
-    try{
-        fetch(endpoint, details)
+export const fetchInterceptor = function(endpoint, details) {
+        return fetch(endpoint, details)
         .then(response => {
-            if(!response.ok) throw 'unauthorizedException';
+            if(!response.ok){
+                const token = window.localStorage.getItem('token');
+                if(token !== undefined || token !== null){
+                    return LoginService.regenerateToken(token);
+                }
+                window.history.pushState({},'/login', window.origin + '/login');
+            }
             return response;
         })
-    }catch(exception){
-        const token = window.sessionStorage.getItem('token');
-        if(!token)
-            LoginService.regenerateToken(token);
-        window.history.pushState({},'/login', window.origin+ '/login');              
-    }
+        .then(_ => {
+            return fetch(endpoint,details)
+        })
+        .then(response => {
+            return response;
+        })
+
 }

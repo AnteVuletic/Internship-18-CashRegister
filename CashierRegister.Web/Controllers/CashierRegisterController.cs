@@ -4,12 +4,14 @@ using System.Linq;
 using CashierRegister.Data.Entities.Models;
 using CashierRegister.Domain.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CashierRegister.Web.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [EnableCors("AnyOrigin")]
     [Authorize]
     public class CashierRegisterController : ControllerBase
     {
@@ -50,6 +52,20 @@ namespace CashierRegister.Web.Controllers
         public ICollection<CashRegister> ReadCashRegister()
         {
             return _cashRegisterRepository.ReadCashRegister().ToList();
+        }
+
+        [HttpPost]
+        public IActionResult EditCashRegister(int id, string location)
+        {
+            try
+            {
+                _cashRegisterRepository.EditCashRegister(id, location);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpGet("{id}")]

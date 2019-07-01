@@ -3,7 +3,9 @@ import * as loginService from '../services/loginService';
 const LOGIN = "LOGIN";
 const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 const REGISTER = "REGISTER";
-const REGISTER_SUCCESS = "REGISTER_SUCESS";
+const REGISTER_SUCCESS = "REGISTER_SUCCESS";
+const HAS_TOKEN = "HAS_TOKEN";
+const HAS_TOKEN_SUCCESS = "HAS_TOKEN_SUCCESS"
 
 const initialState = {
     username: '',
@@ -13,58 +15,75 @@ const initialState = {
     isAuthorized: false
 }
 
-export const loginCashier = (username, password) => dispatch => {
+export const loginCashier = (username, password) => async dispatch => {
     dispatch({
         type: LOGIN
     });
 
-    return loginService.loginCashier(username,password)
-        .then(response => dispatch({ type: LOGIN_SUCCESS, user: response }));
+    const response = await loginService.loginCashier(username, password);
+    return dispatch({ type: LOGIN_SUCCESS, user: response });
 }
 
-export const registerCashier = (username, password) => dispatch => {
+export const registerCashier = (username, password) => async dispatch => {
     dispatch({
         type: REGISTER
     });
 
-    return loginService.registerCashier(username, password)
-        .then(response => dispatch({ type: REGISTER_SUCCESS, user: response }));
+    const response = await loginService.registerCashier(username, password);
+    return dispatch({ type: REGISTER_SUCCESS, user: response });
+}
+
+export const hasToken = (token) => async dispatch => {
+    dispatch({
+        type: HAS_TOKEN
+    });
+
+    const response = await loginService.getUser(token);
+    return dispatch({ type: HAS_TOKEN_SUCCESS, user: response });
 }
 
 const reducer = (state = initialState, action) => {
-    switch(action.Type){
-        case LOGIN: {
+    switch(action.type) {
+        case HAS_TOKEN:
             return {
                 ...state,
                 loading: true
             }
-        }
-        case LOGIN_SUCCESS: {
+        case HAS_TOKEN_SUCCESS:
+            console.log(action.user)
+            return {
+                ...action.user,
+                isAuthorized: true,
+                loading: false
+            }
+        case LOGIN:
+            return {
+                ...state,
+                loading: true
+            }
+        case LOGIN_SUCCESS:
             return {
                 ...action.user,
                 loading: false,
                 isAuthorized: true
             }
-        }
-        case REGISTER: {
+        case REGISTER:
             return {
                 ...state,
                 loading: true
             }
-        }
-        case REGISTER_SUCCESS: {
+        case REGISTER_SUCCESS:
             return {
                 ...action.user,
                 loading: false,
                 isAuthorized: true
             }
-        }
-        default: {
+        default:
             return {
                 ...state
             }
-        }
     }
+
 }
 
 export default reducer;

@@ -15,12 +15,10 @@ namespace CashierRegister.Infrastructure.Helpers
         public JwtHelper(IConfiguration configuration)
         {
             _issuer = configuration["JWT:Issuer"];
-            _audienceId = configuration["JWT:Issuer"];
             _secret = Encoding.UTF8.GetBytes(configuration["JWT:Key"]);
         }
 
         private readonly string _issuer;
-        private readonly string _audienceId;
         private readonly byte[] _secret;
 
         public string GetJwtToken(Cashier userToGenerateFor)
@@ -29,7 +27,6 @@ namespace CashierRegister.Infrastructure.Helpers
             var payload = new Dictionary<string, string>
             {
                 {"iss", _issuer},
-                {"aud", _audienceId},
                 {"exp", (currentSeconds + 300).ToString(CultureInfo.InvariantCulture)},
                 {"cashierId", userToGenerateFor.Id.ToString() },
                 {"username", userToGenerateFor.Username }
@@ -54,12 +51,11 @@ namespace CashierRegister.Infrastructure.Helpers
             var expiryTime = decodedJObjectToken["exp"].ToObject<double>();
 
             if (currentSeconds - expiryTime > 86400)
-                return null;
+                return existingToken;
 
             var payload = new Dictionary<string, string>
             {
                 {"iss", decodedJObjectToken["iss"].ToString() },
-                {"aud", decodedJObjectToken["aud"].ToString()},
                 {"exp", (currentSeconds + 300).ToString(CultureInfo.InvariantCulture) },
                 {"cashierId", decodedJObjectToken["cashierId"].ToString()},
                 {"username", decodedJObjectToken["username"].ToString()}

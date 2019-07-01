@@ -1,13 +1,7 @@
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using CashierRegister.Data.Entities;
 using CashierRegister.Infrastructure.Helpers;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +11,10 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace CashierRegister.Web
 {
@@ -39,11 +37,10 @@ namespace CashierRegister.Web
                     {
                         ValidateIssuer = true,
                         ValidIssuer = Configuration["JWT:Issuer"],
-                        ValidateAudience = true,
-                        ValidAudience = Configuration["JWT:Issuer"],
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey =
-                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"]))
+                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"])),
+                        RequireExpirationTime = true
                     };
                 });
 
@@ -76,6 +73,19 @@ namespace CashierRegister.Web
                 services.AddScoped(type.GetInterface($"I{type.Name}"), type);
             }
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy
+                (
+                    "AnyOrigin",
+                    builder => builder
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                );
+            });
+
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
@@ -97,6 +107,8 @@ namespace CashierRegister.Web
                 app.UseHsts();
             }
 
+            app.UseCors("AnyOrigin");
+            app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();

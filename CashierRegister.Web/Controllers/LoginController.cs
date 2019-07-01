@@ -1,22 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CashierRegister.Data.Entities.Models;
 using CashierRegister.Domain.Repositories.Interfaces;
-using CashierRegister.Infrastructure.DataTransferObjects;
 using CashierRegister.Infrastructure.Helpers;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace CashierRegister.Web.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
     [AllowAnonymous]
+    [EnableCors("AnyOrigin")]
     public class LoginController : ControllerBase
     {
         public LoginController(
@@ -38,8 +35,8 @@ namespace CashierRegister.Web.Controllers
                 var userAuthorized = _cashierRepository.AuthorizeUser(cashier.Username, cashier.Password);
                 return Ok(new
                 {
-                    userAuthorized.Id,
-                    userAuthorized.Username,
+                    id = userAuthorized.Id,
+                    username = userAuthorized.Username,
                     token = _jwtHelper.GetJwtToken(userAuthorized)
                 });
             }
@@ -57,8 +54,8 @@ namespace CashierRegister.Web.Controllers
                 var user = _cashierRepository.CreateCashier(cashier.Username, cashier.Password);
                 return Ok(new
                 {
-                    user.Id,
-                    user.Username,
+                    id = user.Id,
+                    username = user.Username,
                     token = _jwtHelper.GetJwtToken(user)
                 });
             }
@@ -68,12 +65,25 @@ namespace CashierRegister.Web.Controllers
             }
         }
 
-        [HttpPost]
-        public IActionResult RegenerateToken([FromBody] string token)
+        [HttpGet("{token}")]
+        public IActionResult RegenerateToken(string token)
         {
             return Ok(new
             {
                 token = _jwtHelper.GetNewToken(token)
+            });
+        }
+
+        [HttpGet("{token}"), Authorize]
+        public IActionResult GetUser(string token)
+        {
+            var id = _jwtHelper.GetUserIdFromToken(token);
+            var user = _cashierRepository.ReadCashier(id);
+            return Ok(new
+            {
+                id = user.Id,
+                username = user.Username,
+                token
             });
         }
     }

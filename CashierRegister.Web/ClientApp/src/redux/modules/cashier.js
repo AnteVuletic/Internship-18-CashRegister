@@ -20,57 +20,65 @@ const initialState = {
     error: null
 }
 
-export const getCashiers = () => dispatch =>{
+export const getCashiers = () => async dispatch =>{
     dispatch({
         type: GET_CASHIERS
     });
 
-    return CashierService.readCashier()
-        .then(response => dispatch({ type: GET_CASHIERS_SUCCESS, cashiers: response }))
-        .catch(error =>{
-            dispatch(errorActions.showError("Getting cashiers error"));
-            return dispatch({ type: GET_CASHIERS_FAIL, error })
-        });
+    try {
+        const response = await CashierService.readCashier();
+        return dispatch({ type: GET_CASHIERS_SUCCESS, cashiers: response });
+    }
+    catch (error) {
+        dispatch(errorActions.showError("Getting cashiers error"));
+        return dispatch({ type: GET_CASHIERS_FAIL, error });
+    }
 }
 
-export const createCashier = (username, password) => dispatch =>{
+export const createCashier = (username, password) => async dispatch =>{
     dispatch({
         type: POST_CASHIER
     });
 
-    return CashierService.createCashier(username, password)
-        .then(response => dispatch({ type: POST_CASHIER_SUCCESS }))
-        .catch(error =>{
-            dispatch(errorActions.showError("Error creating cashier"));
-            return dispatch({ type:  POST_CASHIER_FAIL, error });
-        })
+    try {
+        const result = await CashierService.createCashier(username, password);
+        return dispatch({ type: POST_CASHIER_SUCCESS });
+    }
+    catch (error) {
+        dispatch(errorActions.showError("Error creating cashier"));
+        return dispatch({ type: POST_CASHIER_FAIL, error });
+    }
         
 }
 
-export const deleteCashier = (id) => dispatch =>{
+export const deleteCashier = (id) => async dispatch =>{
     dispatch({
         type: DELETE_CASHIER
     });
 
-    return CashierService.deleteCashier(id)
-        .then(response => dispatch({ type: DELETE_CASHIER_SUCCESS }))
-        .catch(error => {
-            dispatch(errorActions.showError("Error deleting cashier"))
-            return dispatch({ type: DELETE_CASHIER_FAIL, error })
-        });
+    try {
+        const response = await CashierService.deleteCashier(id);
+        return dispatch({ type: DELETE_CASHIER_SUCCESS });
+    }
+    catch (error) {
+        dispatch(errorActions.showError("Error deleting cashier"));
+        return dispatch({ type: DELETE_CASHIER_FAIL, error });
+    }
 }
 
-export const editCashierPassword = (id, password) => dispatch =>{
+export const editCashierPassword = (id, password) => async dispatch =>{
     dispatch({
         type: EDIT_CASHIER
     });
 
-    return CashierService.editCashierPassword(id, password)
-        .then(response => dispatch({ type: EDIT_CASHIER_SUCCESS }))
-        .catch(error => {
-            dispatch(errorActions.showError("Error editing cashier"))
-            return dispatch({ type: DELETE_CASHIER_FAIL, error });
-        });
+    try {
+        const response = await CashierService.editCashierPassword(id, password);
+        return dispatch({ type: EDIT_CASHIER_SUCCESS });
+    }
+    catch (error) {
+        dispatch(errorActions.showError("Error editing cashier"));
+        return dispatch({ type: DELETE_CASHIER_FAIL, error });
+    }
 }
 
 const reducer = (state = initialState, action ) =>{

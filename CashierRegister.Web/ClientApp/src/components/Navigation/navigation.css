@@ -1,0 +1,23 @@
+nav{
+    display: flex;
+    justify-content: space-around;
+    background-color: #ba00ba;
+    padding: 0 15px;
+    margin: 0 50px;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+nav > a{
+    background-color: #FF00FF;
+    padding: 15px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: #FFFFFF;
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+}
+nav > a:hover{
+    background-color: #550055;
+    cursor: pointer;
+}

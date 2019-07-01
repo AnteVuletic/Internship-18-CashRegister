@@ -10,6 +10,7 @@ namespace CashierRegister.Domain.Repositories.Interfaces
     {
         void RegisterCashRegister(string location);
         IQueryable<CashRegister> ReadCashRegister();
+        void EditCashRegister(int id, string location);
         bool DeleteCashRegister(int id);
     }
 }

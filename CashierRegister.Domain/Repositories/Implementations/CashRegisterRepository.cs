@@ -23,6 +23,14 @@ namespace CashierRegister.Domain.Repositories.Implementations
         }
 
         public IQueryable<CashRegister> ReadCashRegister() => _dbCashierRegisterContext.CashRegisters;
+        public void EditCashRegister(int id, string location)
+        {
+            var cashRegister = ReadCashRegister(id);
+
+            cashRegister.Location = location;
+
+            _dbCashierRegisterContext.SaveChanges();
+        }
 
         private CashRegister ReadCashRegister(int id)
         {

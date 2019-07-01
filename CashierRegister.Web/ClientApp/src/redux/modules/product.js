@@ -20,56 +20,64 @@ const initialState = {
     error: null
 }
 
-export const getProducts = () => dispatch =>{
+export const getProducts = () => async dispatch =>{
     dispatch({
         type: GET_PRODUCTS
     });
 
-    return ProductService.fetchProducts()
-    .then(response => dispatch({ type: GET_PRODUCTS_SUCCESS, products: response}))
-    .catch(error => {
+    try {
+        const response = await ProductService.fetchProducts();
+        return dispatch({ type: GET_PRODUCTS_SUCCESS, products: response });
+    }
+    catch (error) {
         dispatch(errorActions.showError("Error getting products"));
         return dispatch({ type: GET_PRODUCTS_FAIL, error });
-    });
+    }
 }
 
-export const editProduct = (productId, name, price) => dispatch =>{
+export const editProduct = (productId, name, price) => async dispatch =>{
     dispatch({
         type: EDIT_PRODUCT
     });
 
-    return ProductService.editProduct(productId, name, price)
-        .then(_ => dispatch({ type: EDIT_PRODUCT_SUCCESS }))
-        .catch(error => { 
-            dispatch(errorActions.showError("Error editing product"));
-            return dispatch({ type: EDIT_PRODUCT_FAIL, error });
-        });
+    try {
+        const _ = await ProductService.editProduct(productId, name, price);
+        return dispatch({ type: EDIT_PRODUCT_SUCCESS });
+    }
+    catch (error) {
+        dispatch(errorActions.showError("Error editing product"));
+        return dispatch({ type: EDIT_PRODUCT_FAIL, error });
+    }
 }
 
-export const deleteProduct = (productId) => dispatch =>{
+export const deleteProduct = (productId) => async dispatch =>{
     dispatch({
         type: DELETE_PRODUCT
     });
 
-    return ProductService.deleteProduct(productId)
-        .then(_ => dispatch({ type: DELETE_PRODUCT_SUCCESS }))
-        .catch(error => {
-            dispatch(errorActions.showError("Error deleting product"));
-            return dispatch({ type: DELETE_PRODUCT_FAIL, error });
-        })
+    try {
+        const _ = await ProductService.deleteProduct(productId);
+        return dispatch({ type: DELETE_PRODUCT_SUCCESS });
+    }
+    catch (error) {
+        dispatch(errorActions.showError("Error deleting product"));
+        return dispatch({ type: DELETE_PRODUCT_FAIL, error });
+    }
 }
 
-export const postProduct = (productId, name, price) => dispatch =>{
+export const postProduct = (productId, name, price) => async dispatch =>{
     dispatch({
         type: POST_PRODUCT
     });
 
-    return ProductService.createProduct(productId, name, price)
-        .then(response => dispatch({ type: POST_PRODUCT_SUCCESS, product: response }))
-        .catch(error => {
-            dispatch(errorActions.showError("Error posting product"));
-            return dispatch({ type: POST_PRODUCT_FAIL, error });
-        });
+    try {
+        const response = await ProductService.createProduct(productId, name, price);
+        return dispatch({ type: POST_PRODUCT_SUCCESS, product: response });
+    }
+    catch (error) {
+        dispatch(errorActions.showError("Error posting product"));
+        return dispatch({ type: POST_PRODUCT_FAIL, error });
+    }
 }
 
 const reducer = (state = initialState, action ) =>{

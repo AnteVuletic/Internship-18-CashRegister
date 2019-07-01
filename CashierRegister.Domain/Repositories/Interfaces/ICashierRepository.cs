@@ -11,6 +11,7 @@ namespace CashierRegister.Domain.Repositories.Interfaces
     {
         Cashier CreateCashier(string username, string password);
         IQueryable<Cashier> ReadCashier();
+        Cashier ReadCashier(int id);
         bool DeleteCashier(int id);
         bool EditCashierPassword(int id, string password);
         Cashier AuthorizeUser(string username, string password);

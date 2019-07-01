@@ -37,7 +37,7 @@ namespace CashierRegister.Domain.Repositories.Implementations
             return cashiers;
         }
 
-        private Cashier ReadCashier(int id)
+        public Cashier ReadCashier(int id)
         {
             var cashierWithId = _dbCashierRegisterContext.Cashiers.Find(id);
 

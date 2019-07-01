@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { loginCashier, registerCashier } from '../../redux/modules/identity';
+import { loginCashier, registerCashier, hasToken } from '../../redux/modules/identity';
 import './loginPage.css';
 
 class LoginPage extends React.Component{
@@ -13,6 +13,16 @@ class LoginPage extends React.Component{
             isLogin: true,
             hasLoginFailed: false,
             isPasswordMissmatch: false
+        }
+    }
+
+    componentWillMount(){
+        let token = window.localStorage.getItem("token");
+        if(token){
+            this.props.hasToken(token)
+                .then(_ => {
+                    this.props.history.push("/")
+                });
         }
     }
 
@@ -83,7 +93,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
     loginCashier,
-    registerCashier
+    registerCashier,
+    hasToken
 }
 
 export default connect(

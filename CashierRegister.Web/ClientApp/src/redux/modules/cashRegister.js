@@ -10,6 +10,9 @@ const POST_CASHREGISTER_FAIL = "POST_CASHREGISTER_FAIL";
 const DELETE_CASHREGISTER = "DELETE_CASHREGISTER";
 const DELETE_CASHREGISTER_SUCCESS = "DELETE_CASHREGISTER_SUCECSS";
 const DELETE_CASHREGISTER_FAIL = "DELETE_CASHREGISTER_FAIL";
+const EDIT_CASHREGISTER = "EDIT_CASHREGISTER";
+const EDIT_CASHREGISTER_SUCCESS = "EDIT_CASHREGISTER_SUCCESS";
+const EDIT_CASHREGISTER_FAIL = "EDIT_CASHREGISTER_FAIL";
 
 const initialState = {
     loading: false,
@@ -17,104 +20,146 @@ const initialState = {
     error: null
 }
 
-export const getCashRegisters = () => dispatch => {
+export const getCashRegisters = () => async dispatch => {
     dispatch({
         type: GET_CASHREGISTERS
     });
 
-    return CashRegisterService.readCashRegister()
-        .then(response => dispatch({ type: GET_CASHREGISTERS_SUCCESS, cashRegisters: response }))
-        .catch(error => {
-            dispatch(errorActions.showError("Getting cash registers error"));
-            return dispatch({ type: GET_CASHREGISTERS_FAIL, error });
-        });
+    try {
+        const response = await CashRegisterService.readCashRegister();
+        return dispatch({ type: GET_CASHREGISTERS_SUCCESS, cashRegisters: response });
+    }
+    catch (error) {
+        dispatch(errorActions.showError("Getting cash registers error"));
+        return dispatch({ type: GET_CASHREGISTERS_FAIL, error });
+    }
 }
 
-export const createCashRegister = (location) => dispatch => {
+export const createCashRegister = (location) => async dispatch => {
     dispatch({
         type: POST_CASHREGISTER
     });
 
-    return CashRegisterService.createCashRegister(location)
-        .then(response => dispatch({ type: POST_CASHREGISTER_SUCCESS }))
-        .catch(error => {
-            dispatch(errorActions.showError("Posting cash register error"));
-            return dispatch({ type: POST_CASHREGISTER_FAIL, error });
-        });
+    try {
+        const response = await CashRegisterService.createCashRegister(location);
+        return dispatch({ type: POST_CASHREGISTER_SUCCESS });
+    }
+    catch (error) {
+        dispatch(errorActions.showError("Posting cash register error"));
+        return dispatch({ type: POST_CASHREGISTER_FAIL, error });
+    }
 }
 
-export const deleteCashRegister = (id) => dispatch => {
+export const deleteCashRegister = (id) => async dispatch => {
     dispatch({
         type: DELETE_CASHREGISTER
     });
 
-    return CashRegisterService.deleteCashRegister(id)
-        .then(response => dispatch({ type: POST_CASHREGISTER_SUCCESS }))
-        .catch(error => {
-            dispatch(errorActions.showError("Deleting cash register error"));
-            return dispatch({ type: POST_CASHREGISTER_FAIL, error });
-        });
+    try {
+        const response = await CashRegisterService.deleteCashRegister(id);
+        return dispatch({ type: POST_CASHREGISTER_SUCCESS });
+    }
+    catch (error) {
+        dispatch(errorActions.showError("Deleting cash register error"));
+        return dispatch({ type: POST_CASHREGISTER_FAIL, error });
+    }
+}
+
+export const editCashRegister = (id, location) => async dispatch =>{
+    dispatch({
+        type: EDIT_CASHREGISTER
+    });
+
+    try {
+        const response = await CashRegisterService.editCashRegister(id, location);
+        return dispatch({ type: EDIT_CASHREGISTER_SUCCESS });
+    }
+    catch (error) {
+        dispatch(errorActions.showError("Editing cash register error"));
+        return dispatch({ type: EDIT_CASHREGISTER_FAIL, error });
+    }
 }
 
 const reducer = (state = initialState, action ) =>{
     switch(action.type){
-        case GET_CASHREGISTERS:{
+        case GET_CASHREGISTERS: {
             return {
                 ...state,
                 loading: true,
                 error: null
             }
         }
-        case GET_CASHREGISTERS_SUCCESS:{
+        case GET_CASHREGISTERS_SUCCESS: {
             return {
                 cashRegisters: action.cashRegisters,
                 loading: false,
                 error: null
             }
         }
-        case GET_CASHREGISTERS_FAIL:{
+        case GET_CASHREGISTERS_FAIL: {
             return {
                 ...state,
                 loading: false,
                 error: action.error
             }
         }
-        case DELETE_CASHREGISTER:{
+        case DELETE_CASHREGISTER: {
             return {
                 ...state,
                 loading: true,
                 error: null
             }
         }
-        case DELETE_CASHREGISTER_SUCCESS:{
+        case DELETE_CASHREGISTER_SUCCESS: {
             return {
                 ...state,
                 loading: false,
                 error: null
             }
         }
-        case DELETE_CASHREGISTER_FAIL:{
+        case DELETE_CASHREGISTER_FAIL: {
             return {
                 ...state,
                 loading: false,
                 error: action.error
             }
         }
-        case POST_CASHREGISTER:{
+        case POST_CASHREGISTER: {
             return {
                 ...state,
                 loading: true,
                 error: null
             }
         }
-        case POST_CASHREGISTER_SUCCESS:{
+        case POST_CASHREGISTER_SUCCESS: {
             return {
                 ...state,
                 loading: false,
                 error: null
             }
         }
-        case POST_CASHREGISTER_FAIL:{
+        case POST_CASHREGISTER_FAIL: {
+            return {
+                ...state,
+                loading: false,
+                error: action.error
+            }
+        }
+        case EDIT_CASHREGISTER: {
+            return {
+                ...state,
+                loading: true,
+                error: null
+            }
+        }
+        case EDIT_CASHREGISTER_SUCCESS: {
+            return {
+                ...state.cashRegisters,
+                loading: false,
+                error: null
+            }
+        }
+        case EDIT_CASHREGISTER_FAIL: {
             return {
                 ...state,
                 loading: false,

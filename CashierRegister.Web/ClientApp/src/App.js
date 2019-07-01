@@ -3,7 +3,7 @@ import { Switch, Route, Redirect } from "react-router-dom";
 import LoginPage from './components/LoginPage/loginPage'
 import Error from "./components/Error/error";
 import PrivateRoute from './components/PrivateRoute/privateRoute';
-import CashRegisters from './components/CashRegister/cashRegisters';
+import Homepage from './components/Homepage/homepage';
 
 
 export default class App extends Component {
@@ -12,9 +12,8 @@ export default class App extends Component {
   render () {
     return (
       <Switch>
-        <Route exact path="/" render={(props) => }
+        <PrivateRoute exactPath="/" component={Homepage} {...this.props} /> } />
         <Route path="/login" render={(props) => <LoginPage {...props} /> } />
-        <PrivateRoute path="/cashRegister" render={(props) => <CashRegisters {...props} />} />
         <Redirect to="/login" />
         <Error />
       </Switch>
