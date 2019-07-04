@@ -62,39 +62,6 @@ namespace CashierRegister.Web.Controllers
             return _cashierRepository.ReadCashier().ToList();
         }
 
-        [HttpPost]
-        public IActionResult LoginCashierToCashRegister(int cashierId, int cashRegisterId)
-        {
-            if (_cashRegisterCashierRepository.StartShift(cashierId, cashRegisterId))
-                return Ok();
-            return BadRequest();
-        }
-
-
-        [HttpPost]
-        public IActionResult StartShift(int cashierId, int cashRegisterId)
-        {
-            if (_cashRegisterCashierRepository.StartShift(cashierId, cashRegisterId))
-                return Ok();
-            return BadRequest();
-        }
-
-        [HttpPost]
-        public IActionResult EndShift(int cashierId, int cashRegisterId)
-        {
-            if (_cashRegisterCashierRepository.EndShift(cashierId, cashRegisterId))
-                return Ok();
-            return BadRequest();
-        }
-
-        [HttpPost]
-        public IActionResult EditShift(int cashierId, int cashRegisterId, DateTime startOfShift, DateTime endOfShift)
-        {
-            if (_cashRegisterCashierRepository.EditShift(cashierId, cashRegisterId, startOfShift, endOfShift))
-                return Ok();
-            return BadRequest();
-        }
-
         [HttpGet("{id}")]
         public ICollection<CashRegisterCashier> CashRegisterByCashierId(int id)
         {

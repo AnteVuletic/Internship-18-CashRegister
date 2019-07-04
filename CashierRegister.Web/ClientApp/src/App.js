@@ -12,7 +12,7 @@ export default class App extends Component {
   render () {
     return (
       <Switch>
-        <PrivateRoute exactPath="/" component={Homepage} {...this.props} /> } />
+        <PrivateRoute path="/" component={Homepage} {...this.props} /> } />
         <Route path="/login" render={(props) => <LoginPage {...props} /> } />
         <Redirect to="/login" />
         <Error />

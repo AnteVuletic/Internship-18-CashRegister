@@ -11,24 +11,26 @@ export const fetchProducts = () => {
     .then(response => response.json());
 }
 
-export const editProduct = (productId, name, price) => {
+export const editProduct = (productId, name, price, countInStorage) => {
     return fetchInterceptor(`${endpointBase}/EditProduct`,{
         method: 'POST',
         body: JSON.stringify({
             productId,
             name,
-            price
+            price,
+            countInStorage
         }),
         headers: AUTHORIZATION_HEADER
     }).then(response => response.json());
 }
 
-export const createProduct = (name, price ) =>{
+export const createProduct = (name, price, countInStorage) =>{
     return fetchInterceptor(`${endpointBase}/CreateProduct`,{
         method: 'POST',
         body: JSON.stringify({
             name,
-            price
+            price,
+            countInStorage
         }),
         headers: AUTHORIZATION_HEADER
     }).then(response => response.json());

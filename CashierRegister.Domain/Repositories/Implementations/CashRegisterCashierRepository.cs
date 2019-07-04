@@ -68,15 +68,15 @@ namespace CashierRegister.Domain.Repositories.Implementations
             return true;
         }
 
-        public bool EditShift(int cashierId, int cashRegisterId, DateTime startOfShift, DateTime endOfShift)
+        public bool EditShift(CashRegisterCashier editedCashRegisterCashier)
         {
-            var shiftInQuestion = _findShift(_dbCashierRegisterContext, cashierId, cashRegisterId);
+            var shiftInQuestion = _findShift(_dbCashierRegisterContext, editedCashRegisterCashier.CashierId, editedCashRegisterCashier.CashRegisterId);
 
             if(shiftInQuestion == null)
                 throw new Exception("There is no shift with given ID's");
 
-            shiftInQuestion.StartOfShift = startOfShift;
-            shiftInQuestion.EndOfShift = endOfShift;
+            shiftInQuestion.StartOfShift = editedCashRegisterCashier.StartOfShift;
+            shiftInQuestion.EndOfShift = editedCashRegisterCashier.EndOfShift;
             _dbCashierRegisterContext.SaveChanges();
 
             return true;

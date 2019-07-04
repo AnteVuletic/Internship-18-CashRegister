@@ -12,7 +12,7 @@ namespace CashierRegister.Domain.Repositories.Interfaces
         IQueryable<CashRegisterCashier> ReadCashRegisterCashierByCashRegisterId(int cashRegisterId);
         IQueryable<CashRegisterCashier> ReadCashRegisterCashierByCashierId(int cashierId);
         bool EndShift(int cashierId, int cashRegisterId);
-        bool EditShift(int cashierId, int cashRegisterId, DateTime startOfShift, DateTime endOfShift);
+        bool EditShift(CashRegisterCashier editedCashRegisterCashier);
         bool DeleteShift(int cashierId, int cashRegisterId);
     }
 }

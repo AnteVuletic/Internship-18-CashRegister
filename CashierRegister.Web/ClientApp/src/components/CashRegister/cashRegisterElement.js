@@ -1,11 +1,11 @@
 import React from 'react';
 
 class CashRegisterElement extends React.Component{
-    constructor({ id, location, deleteCashRegister, editCashRegister, onModified }){
-        super({ id, location, deleteCashRegister, editCashRegister, onModified });
+    constructor({ id, location, deleteCashRegister, editCashRegister, onModified, connectCashRegister, disconnectCashRegister, identity }){
+        super({ id, location, deleteCashRegister, editCashRegister, onModified, connectCashRegister, disconnectCashRegister, identity });
         this.state = {
             isEdit: false,
-            location: ''
+            location
         }
     }
 
@@ -42,13 +42,23 @@ class CashRegisterElement extends React.Component{
 
         editCashRegister(id,location)
             .then(response => {
+                this.setState({
+                    isEdit: false
+                })
                 onModified();
             });
     }
 
     render(){
-        const { id, location } = this.props;
-        const { isEdit } = this.state;
+        const { id, connectCashRegister, disconnectCashRegister, identity } = this.props;
+        const { isEdit, location } = this.state;
+        const connectOrDisconnect = identity.cashRegisterId === -1 ?
+        <button onClick={() => connectCashRegister(id)}>
+            Connect
+        </button> :
+        <button onClick={() => disconnectCashRegister(id)}>
+            Disconnect
+        </button>
         const view = 
         <div>
             <span>{id}</span>
@@ -56,7 +66,7 @@ class CashRegisterElement extends React.Component{
         </div>;
         const edit = 
         <form onSubmit={this.handleEditSubmit}>
-            <input name="location" type="text" placeholder="Enter location here" minLength="3" onChange={this.handleInputChange} />
+            <input name="location" type="text" placeholder="Enter location here" value={location} minLength="3" onChange={this.handleInputChange} />
             <input type="submit" value="Submit"/> 
         </form>
         return (
@@ -68,6 +78,7 @@ class CashRegisterElement extends React.Component{
                 }
                 <button onClick={this.handleToggleEdit}>Toggle edit</button>
                 <button onClick={this.handleDelete}>Delete</button>
+                {connectOrDisconnect}
             </article>
         );
     }

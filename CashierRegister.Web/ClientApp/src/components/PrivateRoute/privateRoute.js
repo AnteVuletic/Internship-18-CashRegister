@@ -4,15 +4,25 @@ import { connect } from 'react-redux';
 import LoginPage from '../LoginPage/loginPage';
 
 const PrivateRoute = ({ path, exactPath, component: Component, identity }) =>{
+    if(path === '')
+        return(
+            <Route exactPath={exactPath}
+                render={(props) =>
+                    identity.isAuthorized ?
+                    <Component {...props} /> :
+                    <LoginPage {...props} />
+                } 
+            />
+        )
     return(
-        <Route path={path} exactPath={exactPath}
+        <Route path={path}
             render={(props) =>
                 identity.isAuthorized ?
                 <Component {...props} /> :
                 <LoginPage {...props} />
-             } 
+            } 
         />
-    )
+    )    
 }
 
 const MapStateToProps = state => ({

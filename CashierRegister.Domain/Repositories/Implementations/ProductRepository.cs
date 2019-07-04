@@ -12,19 +12,20 @@ namespace CashierRegister.Domain.Repositories.Implementations
     {
         public ProductRepository(CashierRegisterContext cashierRegisterContext) : base(cashierRegisterContext) {}
 
-        public void CreateProduct(string name, int price)
+        public void CreateProduct(Product productToAdd)
         {
             var hasProductName = _dbCashierRegisterContext.Products.Any(product =>
-                string.Equals(product.Name, name, StringComparison.CurrentCultureIgnoreCase));
+                string.Equals(product.Name, productToAdd.Name, StringComparison.CurrentCultureIgnoreCase));
 
             if (hasProductName)
-                throw new Exception($"Product with name: {name} already exists");
+                throw new Exception($"Product with name: {productToAdd.Name} already exists");
 
             var newProduct = new Product
             {
                 Id = new Guid(),
-                Name = name,
-                Price = price
+                Name = productToAdd.Name,
+                Price = productToAdd.Price,
+                CountInStorage =  productToAdd.CountInStorage
             };
 
             _dbCashierRegisterContext.Products.Add(newProduct);
@@ -48,12 +49,13 @@ namespace CashierRegister.Domain.Repositories.Implementations
             return products;
         }
 
-        public bool EditProduct(Guid id, string name, int price)
+        public bool EditProduct(Product productEdited)
         {
-            var productInQuestion = ReadProduct(id);
+            var productInQuestion = ReadProduct(productEdited.Id);
 
-            productInQuestion.Name = name;
-            productInQuestion.Price = price;
+            productInQuestion.Name = productEdited.Name;
+            productInQuestion.Price = productEdited.Price;
+            productInQuestion.CountInStorage = productEdited.CountInStorage;
 
             _dbCashierRegisterContext.SaveChanges();
 

@@ -1,0 +1,12 @@
+.addButton{
+    position: relative;
+    display: block;
+    margin: 15px auto;
+}
+
+.addForm{
+    position: relative;
+    width: fit-content;
+    display: block;
+    margin: 15px auto;
+}

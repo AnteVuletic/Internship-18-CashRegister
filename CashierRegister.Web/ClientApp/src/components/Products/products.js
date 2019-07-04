@@ -1,12 +1,12 @@
 import React from 'react';
 import { Switch } from 'react-router-dom';
 import PrivateRoute from '../PrivateRoute/privateRoute';
-import CashRegisterList from './cashRegisterList';
+import ProductList from './productList';
 
 const CashRegister = (props) => {
     return(
         <Switch>
-            <PrivateRoute exactPath="/" component={CashRegisterList} {...props} />
+            <PrivateRoute path="/products" component={ProductList} {...props} />
         </Switch>
     )
 }

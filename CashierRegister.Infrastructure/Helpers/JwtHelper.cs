@@ -28,8 +28,8 @@ namespace CashierRegister.Infrastructure.Helpers
             {
                 {"iss", _issuer},
                 {"exp", (currentSeconds + 300).ToString(CultureInfo.InvariantCulture)},
-                {"cashierId", userToGenerateFor.Id.ToString() },
-                {"username", userToGenerateFor.Username }
+                {"iat", (currentSeconds).ToString(CultureInfo.InvariantCulture)},
+                {"cashierId", userToGenerateFor.Id.ToString() }
             };
 
             return JWT.Encode(payload, _secret, JwsAlgorithm.HS256);
@@ -50,15 +50,15 @@ namespace CashierRegister.Infrastructure.Helpers
             var currentSeconds = Math.Round(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds);
             var expiryTime = decodedJObjectToken["exp"].ToObject<double>();
 
-            if (currentSeconds - expiryTime > 86400)
+            if (currentSeconds - expiryTime > 600)
                 return existingToken;
 
             var payload = new Dictionary<string, string>
             {
                 {"iss", decodedJObjectToken["iss"].ToString() },
-                {"exp", (currentSeconds + 300).ToString(CultureInfo.InvariantCulture) },
-                {"cashierId", decodedJObjectToken["cashierId"].ToString()},
-                {"username", decodedJObjectToken["username"].ToString()}
+                {"exp", (currentSeconds + 600).ToString(CultureInfo.InvariantCulture) },
+                {"iat", (currentSeconds).ToString(CultureInfo.InvariantCulture)},
+                {"cashierId", decodedJObjectToken["cashierId"].ToString()}
             };
 
             return JWT.Encode(payload, _secret, JwsAlgorithm.HS256);

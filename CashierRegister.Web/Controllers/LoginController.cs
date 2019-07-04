@@ -13,7 +13,6 @@ namespace CashierRegister.Web.Controllers
     [Route("api/[controller]/[action]")]
     [ApiController]
     [AllowAnonymous]
-    [EnableCors("AnyOrigin")]
     public class LoginController : ControllerBase
     {
         public LoginController(

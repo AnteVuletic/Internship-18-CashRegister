@@ -13,7 +13,6 @@ namespace CashierRegister.Web.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [EnableCors("AnyOrigin")]
     [Authorize]
     public class ReceiptController : ControllerBase
     {

@@ -71,8 +71,9 @@ export const editCashRegister = (id, location) => async dispatch =>{
     });
 
     try {
-        const response = await CashRegisterService.editCashRegister(id, location);
-        return dispatch({ type: EDIT_CASHREGISTER_SUCCESS });
+        await CashRegisterService.editCashRegister(id, location);
+        const response = await CashRegisterService.readCashRegister();
+        return dispatch({ type: EDIT_CASHREGISTER_SUCCESS, cashRegisters: response });
     }
     catch (error) {
         dispatch(errorActions.showError("Editing cash register error"));

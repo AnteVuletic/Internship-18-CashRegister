@@ -13,7 +13,6 @@ namespace CashierRegister.Web.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [EnableCors("AnyOrigin")]
     [Authorize]
     public class ProductController : ControllerBase
     {
@@ -25,11 +24,11 @@ namespace CashierRegister.Web.Controllers
         private readonly IProductRepository _productRepository;
 
         [HttpPost]
-        public IActionResult CreateProduct(string name, int price)
+        public IActionResult CreateProduct([FromBody]Product product)
         {
             try
             {
-                _productRepository.CreateProduct(name, price);
+                _productRepository.CreateProduct(product);
                 return Ok();
             }
             catch (Exception)
@@ -47,9 +46,9 @@ namespace CashierRegister.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditProduct(Guid productId, string name, int price)
+        public IActionResult EditProduct([FromBody]Product productEdited)
         {
-            var isSuccessfulEditProduct = _productRepository.EditProduct(productId, name, price);
+            var isSuccessfulEditProduct = _productRepository.EditProduct(productEdited);
             if (isSuccessfulEditProduct)
                 return Ok();
 

@@ -35,13 +35,13 @@ export const getProducts = () => async dispatch =>{
     }
 }
 
-export const editProduct = (productId, name, price) => async dispatch =>{
+export const editProduct = (productId, name, price, countInStorage) => async dispatch =>{
     dispatch({
         type: EDIT_PRODUCT
     });
 
     try {
-        const _ = await ProductService.editProduct(productId, name, price);
+        const _ = await ProductService.editProduct(productId, name, price, countInStorage);
         return dispatch({ type: EDIT_PRODUCT_SUCCESS });
     }
     catch (error) {
@@ -65,13 +65,13 @@ export const deleteProduct = (productId) => async dispatch =>{
     }
 }
 
-export const postProduct = (productId, name, price) => async dispatch =>{
+export const postProduct = (name, price, countInStorage) => async dispatch =>{
     dispatch({
         type: POST_PRODUCT
     });
 
     try {
-        const response = await ProductService.createProduct(productId, name, price);
+        const response = await ProductService.createProduct(name, price, countInStorage);
         return dispatch({ type: POST_PRODUCT_SUCCESS, product: response });
     }
     catch (error) {

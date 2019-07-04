@@ -6,12 +6,12 @@ using CashierRegister.Domain.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 namespace CashierRegister.Web.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [EnableCors("AnyOrigin")]
     [Authorize]
     public class CashierRegisterController : ControllerBase
     {
@@ -27,8 +27,9 @@ namespace CashierRegister.Web.Controllers
         private readonly ICashRegisterCashierRepository _cashRegisterCashierRepository;
 
         [HttpPost]
-        public IActionResult CreateCashRegister(string location)
+        public IActionResult CreateCashRegister([FromBody]JObject payload)
         {
+            var location = (string)payload.Property("location");
             try
             {
                 _cashRegisterRepository.RegisterCashRegister(location);
@@ -55,11 +56,11 @@ namespace CashierRegister.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditCashRegister(int id, string location)
+        public IActionResult EditCashRegister([FromBody]CashRegister cashRegister)
         {
             try
             {
-                _cashRegisterRepository.EditCashRegister(id, location);
+                _cashRegisterRepository.EditCashRegister(cashRegister.Id, cashRegister.Location);
                 return Ok();
             }
             catch (Exception)

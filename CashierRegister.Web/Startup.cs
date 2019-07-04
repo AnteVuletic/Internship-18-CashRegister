@@ -1,3 +1,4 @@
+using System;
 using CashierRegister.Data.Entities;
 using CashierRegister.Infrastructure.Helpers;
 using Microsoft.AspNetCore.Builder;
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -15,6 +15,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CashierRegister.Web
 {
@@ -30,23 +31,30 @@ namespace CashierRegister.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(configuration =>
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+            .AddJwtBearer(configuration =>
                 {
                     configuration.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = Configuration["JWT:Issuer"],
                         ValidateIssuerSigningKey = true,
+                        ValidateLifetime = true,
+                        ValidateAudience =  false,
+                        ValidIssuer = Configuration["JWT:Issuer"],
                         IssuerSigningKey =
                             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"])),
-                        RequireExpirationTime = true
+                        ClockSkew = TimeSpan.Zero
                     };
                 });
 
             services.AddDbContext<CashierRegisterContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("CashierRegister")));
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddMvc().AddJsonOptions(options =>
             {
@@ -73,19 +81,6 @@ namespace CashierRegister.Web
                 services.AddScoped(type.GetInterface($"I{type.Name}"), type);
             }
 
-            services.AddCors(options =>
-            {
-                options.AddPolicy
-                (
-                    "AnyOrigin",
-                    builder => builder
-                        .AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials()
-                );
-            });
-
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
@@ -107,11 +102,11 @@ namespace CashierRegister.Web
                 app.UseHsts();
             }
 
-            app.UseCors("AnyOrigin");
-            app.UseAuthentication();
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            app.UseHttpsRedirection();
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {
