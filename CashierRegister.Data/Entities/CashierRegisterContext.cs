@@ -19,6 +19,8 @@ namespace CashierRegister.Data.Entities
         public DbSet<Product> Products { get; set; }
         public DbSet<Receipt> Receipts { get; set; }
         public DbSet<ReceiptProduct> ReceiptProducts { get; set; }
+        public DbSet<ProductTax> ProductTaxes { get; set; }
+        public DbSet<Tax> Taxes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -57,6 +59,16 @@ namespace CashierRegister.Data.Entities
                 .HasOne(receiptProduct => receiptProduct.Product)
                 .WithMany(product => product.ReceiptProducts)
                 .HasForeignKey(receiptProduct => receiptProduct.ProductId);
+
+            modelBuilder.Entity<ProductTax>()
+                .HasOne(productTax => productTax.Product)
+                .WithMany(products => products.ProductTaxes)
+                .HasForeignKey(productTax => productTax.ProductId);
+
+            modelBuilder.Entity<ProductTax>()
+                .HasOne(productTax => productTax.Tax)
+                .WithMany(taxes => taxes.ProductTaxes)
+                .HasForeignKey(productTax => productTax.TaxId);
         }
     }
 }

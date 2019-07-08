@@ -1,14 +1,15 @@
 import React from 'react';
 import { Route } from "react-router-dom";
-import { connect } from 'react-redux';
 import LoginPage from '../LoginPage/loginPage';
 
-const PrivateRoute = ({ path, exactPath, component: Component, identity }) =>{
+const PrivateRoute = ({ path, exactPath, component: Component }) =>{
+    let token = window.localStorage.getItem('token');
+    let isAuthorized = token != null;
     if(path === '')
         return(
             <Route exactPath={exactPath}
                 render={(props) =>
-                    identity.isAuthorized ?
+                    isAuthorized ?
                     <Component {...props} /> :
                     <LoginPage {...props} />
                 } 
@@ -17,7 +18,7 @@ const PrivateRoute = ({ path, exactPath, component: Component, identity }) =>{
     return(
         <Route path={path}
             render={(props) =>
-                identity.isAuthorized ?
+                isAuthorized ?
                 <Component {...props} /> :
                 <LoginPage {...props} />
             } 
@@ -25,10 +26,4 @@ const PrivateRoute = ({ path, exactPath, component: Component, identity }) =>{
     )    
 }
 
-const MapStateToProps = state => ({
-    identity: state.identity
-});
-
-export default connect(
-    MapStateToProps
-)(PrivateRoute);
+export default PrivateRoute;

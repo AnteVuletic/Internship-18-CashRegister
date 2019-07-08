@@ -10,20 +10,20 @@ export const createCashier = (username, password) => {
             username,
             password
         }),
-        headers: AUTHORIZATION_HEADER
+        headers: AUTHORIZATION_HEADER()
     }).then(response => response.json);
 }
 
 export const deleteCashier = (id) => {
     return fetchInterceptor(`${endpointBase}/DeleteCashier/${id}`,{
         method: 'DELETE',
-        headers: AUTHORIZATION_HEADER
+        headers: AUTHORIZATION_HEADER()
     }).then(response => response.json())
 }
 
 export const readCashier = () => {
     return fetchInterceptor(`${endpointBase}/ReadCashier`, {
-        headers: AUTHORIZATION_HEADER
+        headers: AUTHORIZATION_HEADER()
     }).then(response => response.json());
 }
 
@@ -34,6 +34,6 @@ export const editCashierPassword = (id, password) =>{
             id,
             password
         }),
-        headers: AUTHORIZATION_HEADER
+        headers: AUTHORIZATION_HEADER()
     }).then(response => response.json());
 }

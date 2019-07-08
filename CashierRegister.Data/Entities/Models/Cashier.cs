@@ -9,7 +9,6 @@ namespace CashierRegister.Data.Entities.Models
     public class Cashier
     {
         public int Id { get; set; }
-        [MinLength(3),MaxLength(10)]
         [JsonProperty("username")]
         public string Username { get; set; }
         [JsonProperty("password")]

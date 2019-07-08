@@ -64,25 +64,27 @@ namespace CashierRegister.Web.Controllers
             }
         }
 
-        [HttpGet("{token}")]
-        public IActionResult RegenerateToken(string token)
+        [HttpGet]
+        public IActionResult RegenerateToken()
         {
+            var accessToken = Request.Headers["Authorization"];
             return Ok(new
             {
-                token = _jwtHelper.GetNewToken(token)
+                token = _jwtHelper.GetNewToken(accessToken)
             });
         }
 
-        [HttpGet("{token}"), Authorize]
-        public IActionResult GetUser(string token)
+        [HttpGet, Authorize]
+        public IActionResult GetUser()
         {
-            var id = _jwtHelper.GetUserIdFromToken(token);
+            var accessToken = Request.Headers["Authorization"];
+            var id = _jwtHelper.GetUserIdFromToken(accessToken);
             var user = _cashierRepository.ReadCashier(id);
             return Ok(new
             {
                 id = user.Id,
                 username = user.Username,
-                token
+                accessToken
             });
         }
     }

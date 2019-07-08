@@ -10,30 +10,30 @@ export const createCashRegister = (location) => {
         body: JSON.stringify({
             location
         }),
-        headers: AUTHORIZATION_HEADER
-    }).then(response => response.json() );
+        headers: AUTHORIZATION_HEADER()
+    }).then(response => response.json());
 }
 
 export const readCashRegister = () => {
     return fetchInterceptor(`${endpointBase}/ReadCashRegister`, {
-        headers: AUTHORIZATION_HEADER
-    }).then(response => response.json() );
+        headers: AUTHORIZATION_HEADER()
+    }).then(response => response.json());
 }
 
 export const deleteCashRegister = (id) => {
     return fetchInterceptor(`${endpointBase}/DeleteCashRegister/${id}`, {
         method: 'DELETE',
-        headers: AUTHORIZATION_HEADER
-    }).then(response => response.json() );
+        headers: AUTHORIZATION_HEADER()
+    }).then(response => response.json());
 }
 
 export const editCashRegister = (id, location) => {
     return fetchInterceptor(`${endpointBase}/EditCashRegister`, {
         method: 'POST',
-        headers: AUTHORIZATION_HEADER,
+        headers: AUTHORIZATION_HEADER(),
         body: JSON.stringify({
             id,
             location
         })
-    }).then(response => response.json() );
+    }).then(response => response.json());
 }

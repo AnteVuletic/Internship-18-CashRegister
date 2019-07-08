@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CashierRegister.Data.Entities.Models;
 using CashierRegister.Domain.Repositories.Interfaces;
+using CashierRegister.Infrastructure.DataTransferObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
@@ -24,11 +25,11 @@ namespace CashierRegister.Web.Controllers
         private readonly IProductRepository _productRepository;
 
         [HttpPost]
-        public IActionResult CreateProduct([FromBody]Product product)
+        public IActionResult CreateProduct([FromBody]ProductDto productDto)
         {
             try
             {
-                _productRepository.CreateProduct(product);
+                _productRepository.CreateProduct(productDto.Product, productDto.ProductTax);
                 return Ok();
             }
             catch (Exception)
@@ -46,9 +47,9 @@ namespace CashierRegister.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditProduct([FromBody]Product productEdited)
+        public IActionResult EditProduct([FromBody]ProductDto productDto)
         {
-            var isSuccessfulEditProduct = _productRepository.EditProduct(productEdited);
+            var isSuccessfulEditProduct = _productRepository.EditProduct(productDto.Product, productDto.ProductTax);
             if (isSuccessfulEditProduct)
                 return Ok();
 
@@ -56,9 +57,9 @@ namespace CashierRegister.Web.Controllers
         }
 
         [HttpGet]
-        public ICollection<Product> ReadProducts()
+        public ICollection<ProductDto> ReadProducts()
         {
-            var products = _productRepository.ReadProducts().ToList();
+            var products = _productRepository.ReadProducts();
 
             return products;
         }

@@ -17,8 +17,7 @@ export const loginCashier = (username, password) => {
     })
     .then(response => response.json())
     .then(response => {
-        if(response.token)
-            window.localStorage.setItem("token", response.token);
+        window.localStorage.setItem("token", response.token);
         return response;
     });
 }
@@ -42,19 +41,27 @@ export const registerCashier = (username, password) => {
     });
 }
 
-export const regenerateToken = (token) => {
-    return fetch(`${endpointBase}/RegenerateToken/${token}`,{
+export const regenerateToken = ( ) => {
+    return fetch(`${endpointBase}/RegenerateToken`,{
+        headers: AUTHORIZATION_HEADER()
+    })
+    .then(response =>{
+        if(!response.ok){
+            window.localStorage.removeItem('token');
+            window.location.assign('/login');
+        }
+        return response;
     })
     .then(response => response.json())
     .then(response => {
+        window.localStorage.removeItem('token');
         window.localStorage.setItem("token",response.token);
-        window.history.pushState({},'/', window.origin + '/');
         return response;
     });
 }
 
 export const getUser = (token) => {
-    return fetchInterceptor(`${endpointBase}/GetUser/${token}`,{
-        headers: AUTHORIZATION_HEADER,
+    return fetchInterceptor(`${endpointBase}/GetUser`,{
+        headers: AUTHORIZATION_HEADER()
     }).then(response => response.json());
 }

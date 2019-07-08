@@ -3,7 +3,7 @@ import { getCashRegisters, deleteCashRegister, editCashRegister, createCashRegis
 import { connectCashRegister,disconnectCashRegister } from '../../redux/modules/identity'
 import { connect } from 'react-redux';
 import CashRegisterElement from './cashRegisterElement'
-import './cashRegister.css';
+import '../styles/forms.css';
 
 class CashRegisterList extends React.Component{
     constructor(props){
@@ -41,8 +41,10 @@ class CashRegisterList extends React.Component{
         const { isAddForm } = this.state;
         const addForm = isAddForm ?
             <form className="addForm" onSubmit={this.handleAddCashierRegister}>
-                <input name="location" type="text" placeholder="Enter location here" minLength="3" onChange={this.handleInputChange} />
-                <input type="submit" value="Submit"/> 
+                <div className="formWrapper">
+                    <input name="location" type="text" placeholder="Enter location here" minLength="3" onChange={this.handleInputChange} />
+                </div>
+                <input className="submit" type="submit" value="Submit"/> 
             </form> :
             '';
         return(

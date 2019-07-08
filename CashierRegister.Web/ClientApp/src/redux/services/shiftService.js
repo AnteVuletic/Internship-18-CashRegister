@@ -7,7 +7,7 @@ const endpointBase = ENDPOINTS_BY_CONTROLLER.SHIFT;
 export const startShift = (cashierId, cashRegisterId) => {
     return fetchInterceptor(`${endpointBase}/StartShift`,{
         method: 'POST',
-        headers: AUTHORIZATION_HEADER,
+        headers: AUTHORIZATION_HEADER(),
         body: JSON.stringify({
             cashierId,
             cashRegisterId
@@ -18,7 +18,7 @@ export const startShift = (cashierId, cashRegisterId) => {
 export const endShift = (cashierId, cashRegisterId) => {
     return fetchInterceptor(`${endpointBase}/EndShift`,{
         method: 'POST',
-        headers: AUTHORIZATION_HEADER,
+        headers: AUTHORIZATION_HEADER(),
         body: JSON.stringify({
             cashierId,
             cashRegisterId
@@ -29,7 +29,7 @@ export const endShift = (cashierId, cashRegisterId) => {
 export const editShift = (cashierId, cashRegisterId, startOfShift, endOfShift) => {
     return fetchInterceptor(`${endpointBase}/EditShift`,{
         method: 'POST',
-        headers: AUTHORIZATION_HEADER,
+        headers: AUTHORIZATION_HEADER(),
         body: JSON.stringify({
             cashierId,
             cashRegisterId,
@@ -42,7 +42,7 @@ export const editShift = (cashierId, cashRegisterId, startOfShift, endOfShift) =
 export const deleteShift = (cashierId, cashRegisterId) => {
     return fetchInterceptor(`${endpointBase}/DeleteShift`,{
         method: 'POST',
-        headers: AUTHORIZATION_HEADER,
+        headers: AUTHORIZATION_HEADER(),
         body: JSON.stringify({
             cashierId,
             cashRegisterId

@@ -1,8 +1,9 @@
 import React from 'react';
 
 class CashRegisterElement extends React.Component{
-    constructor({ id, location, deleteCashRegister, editCashRegister, onModified, connectCashRegister, disconnectCashRegister, identity }){
-        super({ id, location, deleteCashRegister, editCashRegister, onModified, connectCashRegister, disconnectCashRegister, identity });
+    constructor(props){
+        super(props);
+        const { id, location, deleteCashRegister, editCashRegister, onModified, connectCashRegister, disconnectCashRegister, identity } = this.props;
         this.state = {
             isEdit: false,
             location
@@ -60,25 +61,27 @@ class CashRegisterElement extends React.Component{
             Disconnect
         </button>
         const view = 
-        <div>
-            <span>{id}</span>
-            <span>{location}</span>
+        <div className="info">
+            <span>Id: {id}</span>
+            <span>Location: {location}</span>
         </div>;
         const edit = 
-        <form onSubmit={this.handleEditSubmit}>
+        <form className="addForm" onSubmit={this.handleEditSubmit}>
             <input name="location" type="text" placeholder="Enter location here" value={location} minLength="3" onChange={this.handleInputChange} />
             <input type="submit" value="Submit"/> 
         </form>
         return (
-            <article>
+            <article className="element">
                 {
                     isEdit ?
                     edit :
                     view
                 }
-                <button onClick={this.handleToggleEdit}>Toggle edit</button>
-                <button onClick={this.handleDelete}>Delete</button>
-                {connectOrDisconnect}
+                <div className="controls">
+                    <button onClick={this.handleToggleEdit}>Toggle edit</button>
+                    <button onClick={this.handleDelete}>Delete</button>
+                    {connectOrDisconnect}
+                </div>
             </article>
         );
     }

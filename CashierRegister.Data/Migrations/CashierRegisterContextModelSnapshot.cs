@@ -57,8 +57,7 @@ namespace CashierRegister.Data.Migrations
 
                     b.Property<string>("Password");
 
-                    b.Property<string>("Username")
-                        .HasMaxLength(10);
+                    b.Property<string>("Username");
 
                     b.HasKey("Id");
 
@@ -81,6 +80,25 @@ namespace CashierRegister.Data.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("CashierRegister.Data.Entities.Models.ProductTax", b =>
+                {
+                    b.Property<int>("ProductTaxId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<Guid>("ProductId");
+
+                    b.Property<int>("TaxId");
+
+                    b.HasKey("ProductTaxId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("TaxId");
+
+                    b.ToTable("ProductTaxes");
+                });
+
             modelBuilder.Entity("CashierRegister.Data.Entities.Models.Receipt", b =>
                 {
                     b.Property<Guid>("Id")
@@ -93,6 +111,14 @@ namespace CashierRegister.Data.Migrations
                     b.Property<int>("CashRegisterCashierId");
 
                     b.Property<DateTime>("DateTimeCreated");
+
+                    b.Property<int>("DirectTaxAtCreation");
+
+                    b.Property<int>("ExciseTaxAtCreation");
+
+                    b.Property<int>("PostTaxPriceAtCreation");
+
+                    b.Property<int>("PreTaxPriceAtCreation");
 
                     b.HasKey("Id");
 
@@ -107,11 +133,32 @@ namespace CashierRegister.Data.Migrations
 
                     b.Property<Guid>("ReceiptId");
 
+                    b.Property<int>("ProductDirectPercentageAtCreation");
+
+                    b.Property<int>("ProductExcisePercentageAtCreation");
+
                     b.HasKey("ProductId", "ReceiptId");
 
                     b.HasIndex("ReceiptId");
 
                     b.ToTable("ReceiptProducts");
+                });
+
+            modelBuilder.Entity("CashierRegister.Data.Entities.Models.Tax", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name");
+
+                    b.Property<int>("Percentage");
+
+                    b.Property<int>("TaxType");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Taxes");
                 });
 
             modelBuilder.Entity("CashierRegister.Data.Entities.Models.CashRegisterCashier", b =>
@@ -124,6 +171,19 @@ namespace CashierRegister.Data.Migrations
                     b.HasOne("CashierRegister.Data.Entities.Models.Cashier", "Cashier")
                         .WithMany("Cashiers")
                         .HasForeignKey("CashierId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("CashierRegister.Data.Entities.Models.ProductTax", b =>
+                {
+                    b.HasOne("CashierRegister.Data.Entities.Models.Product", "Product")
+                        .WithMany("ProductTaxes")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("CashierRegister.Data.Entities.Models.Tax", "Tax")
+                        .WithMany("ProductTaxes")
+                        .HasForeignKey("TaxId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

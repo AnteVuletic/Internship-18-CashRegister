@@ -21,7 +21,6 @@ const initialState = {
     token: '',
     loading: false,
     error: false,
-    isAuthorized: false,
     cashRegisterId: -1
 }
 
@@ -90,7 +89,6 @@ const reducer = (state = initialState, action) => {
         case HAS_TOKEN_SUCCESS:
             return {
                 ...action.user,
-                isAuthorized: true,
                 loading: false,
                 cashRegisterId: -1
             }
@@ -103,7 +101,6 @@ const reducer = (state = initialState, action) => {
             return {
                 ...action.user,
                 loading: false,
-                isAuthorized: true
             }
         case REGISTER:
             return {
@@ -114,7 +111,6 @@ const reducer = (state = initialState, action) => {
             return {
                 ...action.user,
                 loading: false,
-                isAuthorized: true,
                 cashRegisterId: -1
             }
         case CONNECT_CASHREGISTER:

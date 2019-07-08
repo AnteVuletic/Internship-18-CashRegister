@@ -4,15 +4,20 @@ using System.Linq;
 using System.Text;
 using CashierRegister.Data.Entities;
 using CashierRegister.Data.Entities.Models;
+using CashierRegister.Data.Enums;
 using CashierRegister.Domain.Repositories.Interfaces;
+using CashierRegister.Infrastructure.DataTransferObjects;
+using CashierRegister.Web.DataSeeds;
 
 namespace CashierRegister.Domain.Repositories.Implementations
 {
     public class ProductRepository : RepositoryAbstraction, IProductRepository
     {
-        public ProductRepository(CashierRegisterContext cashierRegisterContext) : base(cashierRegisterContext) {}
+        public ProductRepository(CashierRegisterContext cashierRegisterContext) : base(cashierRegisterContext)
+        {
+        }
 
-        public void CreateProduct(Product productToAdd)
+        public void CreateProduct(Product productToAdd,Tax taxToAdd)
         {
             var hasProductName = _dbCashierRegisterContext.Products.Any(product =>
                 string.Equals(product.Name, productToAdd.Name, StringComparison.CurrentCultureIgnoreCase));
@@ -29,6 +34,42 @@ namespace CashierRegister.Domain.Repositories.Implementations
             };
 
             _dbCashierRegisterContext.Products.Add(newProduct);
+
+            var taxOrDefault = _dbCashierRegisterContext.Taxes.SingleOrDefault(tax => tax.Name == taxToAdd.Name);
+            if (taxOrDefault == null)
+            {
+                taxOrDefault = new Tax
+                {
+                    Name = taxToAdd.Name,
+                    Percentage = taxToAdd.Percentage,
+                    TaxType = TaxType.Excise
+                };
+
+                _dbCashierRegisterContext.Taxes.Add(taxOrDefault);
+            }
+
+            var taxesOnProduct = new ProductTax
+            {
+                Product = newProduct,
+                ProductId = newProduct.Id,
+                Tax = taxOrDefault,
+                TaxId = taxOrDefault.Id
+            };
+
+            _dbCashierRegisterContext.ProductTaxes.Add(taxesOnProduct);
+
+            var directTax = _dbCashierRegisterContext.Taxes.First(tax => tax.TaxType == TaxType.Direct);
+
+            var directTaxOnProduct = new ProductTax
+            {
+                Product = newProduct,
+                ProductId = newProduct.Id,
+                Tax = directTax,
+                TaxId = directTax.Id
+            };
+
+            _dbCashierRegisterContext.ProductTaxes.Add(directTaxOnProduct);
+
             _dbCashierRegisterContext.SaveChanges();
         }
 
@@ -42,20 +83,61 @@ namespace CashierRegister.Domain.Repositories.Implementations
             return productInQuestion;
         }
 
-        public IQueryable<Product> ReadProducts()
+        public ICollection<ProductDto> ReadProducts()
         {
-            var products = _dbCashierRegisterContext.Products;
+            var productsDtoList = new List<ProductDto>();
 
-            return products;
+            var productQueryable = _dbCashierRegisterContext.Products;
+            var taxesQueryable = _dbCashierRegisterContext.Taxes;
+
+            foreach (var product in productQueryable)
+            {
+                var taxOnProduct = taxesQueryable.First(tax => tax.ProductTaxes.Any(productTax => productTax.ProductId == product.Id) && tax.TaxType == TaxType.Excise);
+                productsDtoList.Add(new ProductDto
+                {
+                    Product = product,
+                    ProductTax = taxOnProduct
+                });
+            }
+
+            return productsDtoList;
         }
 
-        public bool EditProduct(Product productEdited)
+        public bool EditProduct(Product productEdited,Tax taxEdited)
         {
             var productInQuestion = ReadProduct(productEdited.Id);
 
             productInQuestion.Name = productEdited.Name;
             productInQuestion.Price = productEdited.Price;
             productInQuestion.CountInStorage = productEdited.CountInStorage;
+
+            var productExciseTaxOrDefault = _dbCashierRegisterContext.Taxes.FirstOrDefault(tax => tax.Name == taxEdited.Name);
+
+            if (productExciseTaxOrDefault != null)
+            {
+                productExciseTaxOrDefault.Percentage = taxEdited.Percentage;
+            }
+            else
+            {
+                productExciseTaxOrDefault = new Tax
+                {
+                    Name = taxEdited.Name,
+                    Percentage = taxEdited.Percentage,
+                    TaxType = TaxType.Excise
+                };
+
+                _dbCashierRegisterContext.Taxes.Add(productExciseTaxOrDefault);
+
+                var productTax = new ProductTax
+                {
+                    Product = productInQuestion,
+                    ProductId = productInQuestion.Id,
+                    Tax = productExciseTaxOrDefault,
+                    TaxId = productExciseTaxOrDefault.Id
+                };
+
+                _dbCashierRegisterContext.ProductTaxes.Add(productTax);
+            }
 
             _dbCashierRegisterContext.SaveChanges();
 

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using CashierRegister.Data.Entities.Models;
 
 namespace CashierRegister.Domain.Repositories.Interfaces
 {
-    public interface IReceiptProductRepository
+    public interface ITaxRepository
     {
-        ReceiptProduct CreateReceiptProduct(Guid receiptId, Guid productId);
-
+        IQueryable<Tax> ReadTaxes();
     }
 }

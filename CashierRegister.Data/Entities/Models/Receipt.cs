@@ -11,5 +11,9 @@ namespace CashierRegister.Data.Entities.Models
         public int CashRegisterCashierId { get; set; }
         public CashRegisterCashier CashRegisterCashier { get; set; }
         public ICollection<ReceiptProduct> ReceiptProducts { get; set; }
+        public int ExciseTaxAtCreation { get; set; }
+        public int DirectTaxAtCreation { get; set; }
+        public int PreTaxPriceAtCreation { get; set; }
+        public int PostTaxPriceAtCreation { get; set; }
     }
 }

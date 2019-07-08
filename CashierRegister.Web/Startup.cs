@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using CashierRegister.Data.Entities;
 using CashierRegister.Infrastructure.Helpers;
 using Microsoft.AspNetCore.Builder;
@@ -34,24 +34,23 @@ namespace CashierRegister.Web
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddJwtBearer(configuration =>
+            {
+                configuration.TokenValidationParameters = new TokenValidationParameters
                 {
-                    configuration.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidateLifetime = true,
-                        ValidateAudience =  false,
-                        ValidIssuer = Configuration["JWT:Issuer"],
-                        IssuerSigningKey =
-                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"])),
-                        ClockSkew = TimeSpan.Zero
-                    };
-                });
+                    ValidateIssuer = true,
+                    ValidateLifetime = true,
+                    ValidateAudience = false,
+                    ValidIssuer = Configuration["JWT:Issuer"],
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"])),
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
 
             services.AddDbContext<CashierRegisterContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("CashierRegister")));
@@ -66,10 +65,11 @@ namespace CashierRegister.Web
             services.AddSingleton(Configuration);
             services.AddSingleton<JwtHelper>();
 
-            var domainAssemblyReflection = Assembly.GetEntryAssembly().GetReferencedAssemblies()
+            var domainAssemblyReflection = Assembly.GetEntryAssembly()
+                ?.GetReferencedAssemblies()
                 .First(asm => asm.FullName.Contains("CashierRegister.Domain"));
 
-            var actualAssembly = Assembly.Load(domainAssemblyReflection.Name)
+            var actualAssembly = Assembly.Load(domainAssemblyReflection?.Name)
                 .GetTypes()
                 .Where(type =>
                     type.IsClass &&

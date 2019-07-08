@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { loginCashier, registerCashier, hasToken } from '../../redux/modules/identity';
-import './loginPage.css';
+import '../styles/forms.css';
 
 class LoginPage extends React.Component{
     constructor(props){
@@ -51,13 +51,15 @@ class LoginPage extends React.Component{
                 });
             return;
         }
-        if(password !== passwordRepeated && isLogin) return;
-            this.props.registerCashier(username,password)
-                .then(response => {
-                    this.props.history.push('/');
-                });
+        if(password !== passwordRepeated && isLogin) {
             this.setState({
                 isPasswordMissmatch: true
+            });
+            return;
+        }
+        this.props.registerCashier(username,password)
+            .then(response => {
+                this.props.history.push('/');
             });
     }
 

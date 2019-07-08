@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CashierRegister.Data.Entities.Models;
 using CashierRegister.Domain.Repositories.Interfaces;
+using CashierRegister.Infrastructure.DataTransferObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
@@ -17,25 +18,17 @@ namespace CashierRegister.Web.Controllers
     public class ReceiptController : ControllerBase
     {
         public ReceiptController(
-            IReceiptProductRepository receiptProductRepository,
             IReceiptRepository receiptRepository)
         {
-            _receiptProductRepository = receiptProductRepository;
             _receiptRepository = receiptRepository;
         }
 
-        private readonly IReceiptProductRepository _receiptProductRepository;
         private readonly IReceiptRepository _receiptRepository;
 
         [HttpPost]
-        public Receipt CreateReceipt(int cashRegisterId, ICollection<Product> products)
+        public Receipt CreateReceipt([FromBody]ReceiptDto receiptDto)
         {
-            var receipt = _receiptRepository.CreateReceipt(cashRegisterId);
-            foreach (var product in products)
-            {
-                _receiptProductRepository.CreateReceiptProduct(receipt.Id, product.Id);
-            }
-
+            var receipt = _receiptRepository.CreateReceipt(receiptDto.CashRegisterId, receiptDto.ProductsOnReceipt);
             return receipt;
         }
 
