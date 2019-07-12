@@ -149,3 +149,54 @@ input, option, select, button{
     width: 90%;
     margin: 10px auto;
 }
+
+.search-on-receipt{
+    width: 50%;
+    display: inline-block !important;
+}
+
+.create-receipt-wrapper{
+    position: relative;
+    display: flex;
+    overflow-y: scroll;
+    height: 60vw;
+    width: 100%;
+}
+
+.receipt-title{
+    color: #ffffff;
+    text-align: center;
+    padding: 10px 0 20px 0;
+    border-bottom: 3px solid #F64C72;
+}
+
+.receipt-section{
+    width: 50%;
+    height: 100%;
+    position: sticky;
+    display: inline-block;
+    background-color: #00baba;
+}
+
+.receipt-section article{
+    background-color: #F64C72;
+    color: #ffffff;
+    margin-top: 2px;
+}
+.receipt-section article span{
+    display: block;
+    font-size: 16px;
+    padding: 3px;
+}
+
+.receipt-actions{
+    position: absolute;
+    z-index: 5;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    padding: 15px 0;
+    background-color: #242582;
+}

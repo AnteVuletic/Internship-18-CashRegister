@@ -39,3 +39,15 @@ export const deleteProduct = (productId) => {
         headers: AUTHORIZATION_HEADER()
     }).then(response => response.json())
 }
+
+export const getFilteredProducts = (filter) => {
+    return fetchInterceptor(`${endpointBase}/ProductsByName/${filter}`,{
+        headers: AUTHORIZATION_HEADER()
+    }).then(response => response.json());
+}
+
+export const getProductById = (id) => {
+    return fetchInterceptor(`${endpointBase}/GetProductById/${id}`,{
+        headers: AUTHORIZATION_HEADER()
+    }).then(response => response.json());
+}

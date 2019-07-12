@@ -26,19 +26,14 @@ namespace CashierRegister.Web.Controllers
         private readonly IReceiptRepository _receiptRepository;
 
         [HttpPost]
-        public Receipt CreateReceipt([FromBody]ReceiptDto receiptDto)
+        public IActionResult CreateReceipt([FromBody]ReceiptDto receiptDto)
         {
-            var receipt = _receiptRepository.CreateReceipt(receiptDto.CashRegisterId, receiptDto.ProductsOnReceipt);
-            return receipt;
+            if (receiptDto.ProductsOnReceipt.Count == 0)
+                return BadRequest();
+            var receiptSavedDto = _receiptRepository.CreateReceipt(receiptDto);
+            return Ok(receiptSavedDto);
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult DeleteReceipt(Guid id)
-        {
-            if (_receiptRepository.DeleteReceipt(id))
-                return Ok();
-            return BadRequest();
-        }
 
         [HttpGet("{id}")]
         public Receipt ReadReceipt(Guid id)
@@ -46,12 +41,5 @@ namespace CashierRegister.Web.Controllers
             return _receiptRepository.ReadReceipt(id);
         }
 
-        [HttpGet("{id}")]
-        public ICollection<Receipt> ReceiptsByShift(int id)
-        {
-            var receipts = _receiptRepository.ReadReceiptByCashRegisterCashierId(id).ToList();
-
-            return receipts;
-        }
     }
 }

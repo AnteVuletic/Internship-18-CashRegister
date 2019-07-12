@@ -31,8 +31,9 @@ export const getProducts = () => async dispatch =>{
     });
 
     try {
-        const response = await ProductService.fetchProducts();
-        return dispatch({ type: GET_PRODUCTS_SUCCESS, products: response });
+        const responseProducts = await ProductService.fetchProducts();
+        const responseTaxes = await TaxService.readTax();
+        return dispatch({ type: GET_PRODUCTS_SUCCESS, response: { products: responseProducts, taxTypes: responseTaxes } });
     }
     catch (error) {
         dispatch(errorActions.showError("Error getting products"));
@@ -112,7 +113,8 @@ const reducer = (state = initialState, action ) =>{
         case GET_PRODUCTS_SUCCESS:{
             return {
                 ...state,
-                products: action.products,
+                products: action.response.products,
+                taxTypes: action.response.taxTypes,
                 loading: false,
                 error: null
             }

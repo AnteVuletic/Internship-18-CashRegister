@@ -1,9 +1,14 @@
 import React from 'react';
+import store from '../../redux';
 
 class ProductElement extends React.Component{
     constructor(props){
         super(props);
-        const { id, name, price, countInStorage, exciseTax, excisePercentage, deleteProduct, editProduct, onModified, taxTypes } = this.props;
+        const { 
+            id, name, price, countInStorage, exciseTax, excisePercentage, 
+            deleteProduct, editProduct, onModified, taxTypes, isReceipt, 
+            onSelectedItem, productsOnReceipt
+            } = this.props;
         this.state = {
             isEdit: false,
             name,
@@ -11,17 +16,53 @@ class ProductElement extends React.Component{
             countInStorage,
             exciseTax,
             excisePercentage,
-            isNewExcise: false
+            isNewExcise: false,
+            productCount: 1
         }
+    }
+
+    updateStateFromStore = () =>{
+        const currentReduxState = store.getState();
+
+        const { products } = currentReduxState.product;
+        const { id } = this.props;
+        const { name, price, countInStorage, exciseTax, excisePercentage } = this.state;
+
+        const productInQuestion = products.find(product => product.product.id == id );
+        if(
+            productInQuestion.product.name !== name || 
+            productInQuestion.product.price !== price || 
+            productInQuestion.product.countInStorage !== countInStorage || 
+            productInQuestion.product.exciseTax !== exciseTax || 
+            productInQuestion.product.excisePercentage !== excisePercentage
+        )
+            this.setState({
+                    ...productInQuestion.product,
+                    ...productInQuestion.productTax,
+                    isNewExcise: false,
+                    productCount: 1
+            });
+    }
+    componentDidMount(){
+        this.unsubscribeStore = store.subscribe(this.updateStateFromStore);
+    }
+
+    componentWillUnmount(){
+        this.unsubscribeStore();
     }
 
     handleInputChange = (event) =>{
         const value = event.target.value;
         const name = event.target.name;
 
-        this.setState({
-            [name]: value
-        });
+        if(name==="productCount" && value > this.state.countInStorage)
+            this.setState({
+                productCount : this.state.countInStorage
+            });
+        else
+            this.setState({
+                [name]: value
+            });
     }
 
     handleToggleEdit = () => {
@@ -32,14 +73,14 @@ class ProductElement extends React.Component{
         });
     }
 
-    handleDelete = () => {
-        const { id, deleteProduct, onModified } = this.props;
+    // handleDelete = () => {
+    //     const { id, deleteProduct, onModified } = this.props;
 
-        deleteProduct(id)
-            .then(_ => {
-                onModified();
-            });
-    }
+    //     deleteProduct(id)
+    //         .then(_ => {
+    //             onModified();
+    //         });
+    // }
 
     handleEditSubmit = (event) => {
         event.preventDefault();
@@ -70,9 +111,16 @@ class ProductElement extends React.Component{
             });
     }
 
+    handleSelectedProduct = () =>{
+        const { productCount } = this.state;
+        const { id } = this.props;
+
+        this.props.onSelectedItem(id, productCount);
+    }
+
     render(){
-        const { id, taxTypes } = this.props;
-        const { isEdit, name, price, countInStorage, isNewExcise, exciseTax, excisePercentage } = this.state;
+        const { id, taxTypes, isReceipt, productsOnReceipt } = this.props;
+        const { isEdit, name, price, countInStorage, isNewExcise, exciseTax, excisePercentage, productCount } = this.state;
 
         const view = 
         <div className="info">
@@ -132,6 +180,8 @@ class ProductElement extends React.Component{
                 <input className="submit" type="submit" value="Submit"/> 
             </form>
         </div>;
+        if(countInStorage <= 0 || productsOnReceipt.find(product => product.product.id === id ))
+            return <div></div>
         return (
             <article className="element">
                 {
@@ -140,8 +190,16 @@ class ProductElement extends React.Component{
                     view
                 }
                 <div className="controls">
-                    <button onClick={this.handleToggleEdit}>Toggle edit</button>
-                    <button onClick={this.handleDelete}>Delete</button>
+                    {
+                        isReceipt ? 
+                        <div>
+                            <label>Count:</label>
+                            <input name="productCount" type="number" max={countInStorage} value={productCount} onChange={this.handleInputChange} />
+                            <button onClick={this.handleSelectedProduct}>Select</button>
+                        </div>:
+                        <button onClick={this.handleToggleEdit}>Toggle edit</button>
+                    }
+                    {/* <button onClick={this.handleDelete}>Delete</button> */}
                 </div>
             </article>
         );

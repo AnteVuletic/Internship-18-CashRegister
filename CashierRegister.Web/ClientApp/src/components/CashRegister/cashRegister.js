@@ -4,6 +4,7 @@ import PrivateRoute from '../PrivateRoute/privateRoute';
 import CashRegisterList from './cashRegisterList';
 
 const CashRegister = (props) => {
+    
     return(
         <Switch>
             <PrivateRoute exactPath="/" component={CashRegisterList} {...props} />

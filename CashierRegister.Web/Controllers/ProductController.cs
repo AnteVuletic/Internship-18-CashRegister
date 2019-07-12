@@ -57,12 +57,27 @@ namespace CashierRegister.Web.Controllers
         }
 
         [HttpGet]
-        public ICollection<ProductDto> ReadProducts()
+        public IActionResult ReadProducts()
         {
             var products = _productRepository.ReadProducts();
 
-            return products;
+            return Ok(products);
         }
 
+        [HttpGet("{searchFilter}")]
+        public IActionResult ProductsByName([FromRoute] string searchFilter)
+        {
+            var filteredProducts = _productRepository.ReadProductsByName(searchFilter);
+
+            return Ok(filteredProducts);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetProductById([FromRoute] Guid id)
+        {
+            var productWithId = _productRepository.ReadProductById(id);
+
+            return Ok(productWithId);
+        }
     }
 }

@@ -6,5 +6,5 @@ export default _ =>
 <nav>
     <Link to="/">Home</Link>
     <Link to="/products">Products</Link>
-    <Link to="/receipts">Receipts</Link>
+    <Link to="/receipts/createReceipt">Receipts</Link>
 </nav>

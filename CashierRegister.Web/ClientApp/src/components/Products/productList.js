@@ -1,7 +1,10 @@
 import React from 'react';
-import { getProducts, deleteProduct, editProduct, postProduct, readTaxes } from '../../redux/modules/product';
+import { getProducts, deleteProduct, editProduct, postProduct } from '../../redux/modules/product';
+import { getAndPushProduct } from '../../redux/modules/receipt';
 import { connect } from 'react-redux';
 import ProductElement from './productElement';
+import store from '../../redux';
+import { getFilteredProducts } from '../../redux/services/productService';
 import '../styles/forms.css';
 
 class ProductList extends React.Component{
@@ -17,12 +20,34 @@ class ProductList extends React.Component{
             isAddForm: false,
             isNewExcise: this.props.taxTypes.filter(taxType => taxType.taxType === "Excise").length === 0,
             searchQuery: '',
-            filteredProducts: this.props.products
+            productsInState: [],
+            taxTypesInState: [],
+            filteredProducts: [],
+            isReceipt: this.props.isReceipt ? true : false
         }
     }
-    componentWillMount(){
+    updateStateFromStore = () =>{
+        const currentReduxState = store.getState();
+
+        const { products, taxTypes } = currentReduxState.product;
+        const { productsInState, taxTypesInState } = this.state;
+
+        if(productsInState !== products || taxTypesInState !== taxTypes)
+            this.setState((prevState) => {
+                return {
+                    ...prevState,
+                    productsInState: products,
+                    taxTypesInState: taxTypes
+                };
+            });
+    }
+    componentDidMount(){
         this.props.getProducts();
-        this.props.readTaxes();
+        this.unsubscribeStore = store.subscribe(this.updateStateFromStore);
+    }
+
+    componentWillUnmount(){
+        this.unsubscribeStore();
     }
 
     handleModified = () =>{
@@ -61,16 +86,79 @@ class ProductList extends React.Component{
     handleSearchChange = (event) => {
         this.handleInputChange(event);
         const { products } = this.props;
+        const searchFilter = event.target.value;
 
-        this.setState({
-            filteredProducts: products.filter(product => product.product.name.includes(event.target.value))
-        });       
+        if(searchFilter.length >= 3){
+            getFilteredProducts(searchFilter).then(filteredProducts => {
+                if(filteredProducts.length !== 0)
+                    this.setState({
+                        filteredProducts
+                    });
+                else
+                    this.setState({
+                        filteredProducts: []
+                    });
+            });
+        }
+        else
+            this.setState({
+                filteredProducts: []
+            });
+    }
+
+    handleItemSelected = (id, productCount) => {
+        this.props.getAndPushProduct(id, productCount);
+    }
+
+    handleProductFilter = () => {
+        const { deleteProduct, editProduct, productsOnReceipt } = this.props;
+        const { productsInState, filteredProducts, taxTypesInState, searchQuery, isReceipt} = this.state;
+
+        if(searchQuery.length < 3 )
+            return productsInState.map((product,index) => {
+                        return <ProductElement
+                                    key={index} 
+                                    id={product.product.id} 
+                                    name={product.product.name}
+                                    price={product.product.price}
+                                    countInStorage={product.product.countInStorage}
+                                    exciseTax={product.productTax.name}
+                                    excisePercentage={product.productTax.percentage}
+                                    deleteProduct={deleteProduct}
+                                    editProduct={editProduct}
+                                    onModified={this.handleModified}
+                                    taxTypes={taxTypesInState}
+                                    isReceipt={isReceipt}
+                                    onSelectedItem={this.handleItemSelected}
+                                    productsOnReceipt={productsOnReceipt}
+                                    />
+            });
+        
+        return filteredProducts.map((product,index) => {
+            return <ProductElement
+                        key={index} 
+                        id={product.product.id} 
+                        name={product.product.name}
+                        price={product.product.price}
+                        countInStorage={product.product.countInStorage}
+                        exciseTax={product.productTax.name}
+                        excisePercentage={product.productTax.percentage}
+                        deleteProduct={deleteProduct}
+                        editProduct={editProduct}
+                        onModified={this.handleModified}
+                        taxTypes={taxTypesInState}
+                        isReceipt={isReceipt}
+                        onSelectedItem={this.handleItemSelected}
+                        productsOnReceipt={productsOnReceipt}
+                        />
+        });
     }
 
     render(){
-        const { deleteProduct, editProduct, taxTypes} = this.props;
-        const { isAddForm, isNewExcise, searchQuery, filteredProducts } = this.state;
+        const { isAddForm, isNewExcise, searchQuery, taxTypesInState, isReceipt } = this.state;
         
+        const displayProducts = this.handleProductFilter();
+
         const excise = isNewExcise ? 
         <div className="exciseSection">
             <label>Excise tax name:</label>
@@ -82,14 +170,14 @@ class ProductList extends React.Component{
             <label>Excise tax: </label>
             <select name="exciseTax" onChange={this.handleInputChange}>
                 {
-                    taxTypes.map((taxType,index)=>{
+                    taxTypesInState.map((taxType,index)=>{
                         if(taxType.taxType ==="Excise")
                             return <option key={index} value={taxType.name}>{taxType.name + " | " + taxType.percentage + "%"}</option>
                     })
                 }
             </select>
         </div>;
-        const addForm = isAddForm ?
+        const addForm = isAddForm && !isReceipt ?
             <div className="addForm">
                 <button 
                     className="exciseToggle"
@@ -107,7 +195,7 @@ class ProductList extends React.Component{
                         <label>Direct tax:</label>
                         <select name="directTax" onChange={this.handleInputChange}>
                             {
-                                taxTypes.map((taxType,index)=>{
+                                taxTypesInState.map((taxType,index)=>{
                                     if(taxType.taxType === "Direct")
                                         return <option key={index} value={taxType.name}>{taxType.name + " | " + taxType.percentage + "%"}</option>
                                 })
@@ -122,29 +210,17 @@ class ProductList extends React.Component{
         return(
             <main>
                 {addForm}
-                <button
-                    className="addButton"
-                    onClick={() => 
-                        this.setState((prevState) => {return { isAddForm: !prevState.isAddForm}})}>
-                        Toggle add form
-                </button>
+                {
+                    !isReceipt ? <button
+                        className="addButton"
+                        onClick={() => 
+                            this.setState((prevState) => {return { isAddForm: !prevState.isAddForm}})}>
+                            Toggle add form
+                    </button> : ''
+                }
                 <input name="searchQuery" className="search" placeholder="Enter your serach here" value={searchQuery} onChange={this.handleSearchChange}></input>
                 {
-                    filteredProducts.map((product,index) => {
-                        return <ProductElement
-                                    key={index} 
-                                    id={product.product.id} 
-                                    name={product.product.name}
-                                    price={product.product.price}
-                                    countInStorage={product.product.countInStorage}
-                                    exciseTax={product.productTax.name}
-                                    excisePercentage={product.productTax.percentage}
-                                    deleteProduct={deleteProduct}
-                                    editProduct={editProduct}
-                                    onModified={this.handleModified}
-                                    taxTypes={taxTypes}
-                                    />
-                    })
+                    displayProducts
                 }
             </main>
         );
@@ -153,7 +229,8 @@ class ProductList extends React.Component{
 
 const MapStateToProps = state => ({
     products: state.product.products,
-    taxTypes: state.product.taxTypes
+    taxTypes: state.product.taxTypes,
+    productsOnReceipt: state.receipt.productsOnNewReceipt
 });
 
 const MapDispatchToProps = {
@@ -161,7 +238,7 @@ const MapDispatchToProps = {
     editProduct,
     deleteProduct,
     postProduct,
-    readTaxes
+    getAndPushProduct
 }
 
 export default connect(

@@ -24,10 +24,8 @@ namespace CashierRegister.Web.Controllers
         [HttpPost]
         public IActionResult StartShift([FromBody] CashRegisterCashier cashRegisterCashier)
         {
-            if (_cashRegisterCashierRepository.StartShift(cashRegisterCashier.CashierId,
-                cashRegisterCashier.CashRegisterId))
-                return Ok();
-            return BadRequest();
+            _cashRegisterCashierRepository.StartShift(cashRegisterCashier.CashierId,cashRegisterCashier.CashRegisterId);
+            return Ok();
         }
 
         [HttpPost]
@@ -54,6 +52,13 @@ namespace CashierRegister.Web.Controllers
                 cashRegisterCashier.CashRegisterId))
                 return Ok();
             return BadRequest();
+        }
+
+        [HttpGet("{cashierId}")]
+        public IActionResult CheckStartedShiftForCashier([FromRoute] int cashierId)
+        {
+            var openShiftOrNull = _cashRegisterCashierRepository.GetStartedShiftOrDefault(cashierId);
+            return Ok(openShiftOrNull);
         }
     }
 }

@@ -12,7 +12,7 @@ export const startShift = (cashierId, cashRegisterId) => {
             cashierId,
             cashRegisterId
         })
-    }).then(response => response.json());
+    });
 }
 
 export const endShift = (cashierId, cashRegisterId) => {
@@ -23,7 +23,7 @@ export const endShift = (cashierId, cashRegisterId) => {
             cashierId,
             cashRegisterId
         })
-    }).then(response => response.json());
+    });
 }
 
 export const editShift = (cashierId, cashRegisterId, startOfShift, endOfShift) => {
@@ -36,16 +36,11 @@ export const editShift = (cashierId, cashRegisterId, startOfShift, endOfShift) =
             startOfShift,
             endOfShift
         })
-    }).then(response => response.json());
+    });
 }
 
-export const deleteShift = (cashierId, cashRegisterId) => {
-    return fetchInterceptor(`${endpointBase}/DeleteShift`,{
-        method: 'POST',
-        headers: AUTHORIZATION_HEADER(),
-        body: JSON.stringify({
-            cashierId,
-            cashRegisterId
-        })
+export const checkStartedShiftForCashier = (cashierId) => {
+    return fetchInterceptor(`${endpointBase}/CheckStartedShiftForCashier/${cashierId}`,{
+        headers: AUTHORIZATION_HEADER()
     }).then(response => response.json());
 }

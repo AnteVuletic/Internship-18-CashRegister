@@ -82,7 +82,7 @@ namespace CashierRegister.Web.Controllers
             var user = _cashierRepository.ReadCashier(id);
             return Ok(new
             {
-                id = user.Id,
+                cashierId = user.Id,
                 username = user.Username,
                 accessToken
             });

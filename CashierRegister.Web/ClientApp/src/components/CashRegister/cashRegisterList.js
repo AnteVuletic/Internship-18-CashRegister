@@ -1,6 +1,6 @@
 import React from 'react';
 import { getCashRegisters, deleteCashRegister, editCashRegister, createCashRegister } from '../../redux/modules/cashRegister';
-import { connectCashRegister,disconnectCashRegister } from '../../redux/modules/identity'
+import { connectCashRegister,disconnectCashRegister, hasToken, checkStartedShift } from '../../redux/modules/identity'
 import { connect } from 'react-redux';
 import CashRegisterElement from './cashRegisterElement'
 import '../styles/forms.css';
@@ -13,8 +13,13 @@ class CashRegisterList extends React.Component{
             isAddForm: false
         }
     }
-    componentWillMount(){
+    componentDidMount(){
         this.props.getCashRegisters();
+        if(this.props.identity.cashierId === -1)
+            this.props.hasToken(window.localStorage.getItem('token'))
+                .then(() => {
+                    this.props.checkStartedShift(this.props.identity.cashierId);
+                });
     }
 
     handleModified = () =>{
@@ -87,7 +92,9 @@ const MapDispatchToProps = {
     editCashRegister,
     createCashRegister,
     connectCashRegister,
-    disconnectCashRegister
+    disconnectCashRegister,
+    hasToken,
+    checkStartedShift
 }
 
 export default connect(

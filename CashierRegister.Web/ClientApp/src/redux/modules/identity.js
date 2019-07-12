@@ -14,10 +14,13 @@ const CONNECT_CASHREGISTER_FAIL = "CONNECT_CASHREGISTER_FAIL";
 const DISCONNECT_CASHREGISTER = "DISCONNECT_CASHREGISTER";
 const DISCONNECT_CASHREGISTER_SUCCESS = "CONNECT_CASHREGISTER_SUCCESS";
 const DISCONNECT_CASHREGISTER_FAIL = "CONNECT_CASHREGISTER_FAIL";
+const CHECK_STARTED_SHIFT = "CHECK_STARTED_SHIFT";
+const CHECK_STARTED_SHIFT_SUCCESS = "CHECK_STARTED_SHIFT_SUCCESS";
+const CHECK_STARTED_SHIFT_FAIL = "CHECK_STARTED_SHIFT_FAIL";
 
 const initialState = {
     username: '',
-    id: -1,
+    cashierId: -1,
     token: '',
     loading: false,
     error: false,
@@ -58,8 +61,9 @@ export const connectCashRegister = (cashierId, cashRegisterId) => async dispatch
 
     try{
         const response = await shiftService.startShift(cashierId, cashRegisterId);
-        return dispatch({ type: CONNECT_CASHREGISTER_SUCCESS });
+        return dispatch({ type: CONNECT_CASHREGISTER_SUCCESS, cashRegisterId });
     }catch(error){
+        console.log("This was error", error)
         errorActions.showError("Failed to start shift");
         return dispatch({ type: CONNECT_CASHREGISTER_FAIL, error });
     }
@@ -79,6 +83,21 @@ export const disconnectCashRegister = (cashierId, cashRegisterId) => async dispa
     }
 }
 
+export const checkStartedShift = (cashierId) => async dispatch =>{
+    dispatch({
+        type: CHECK_STARTED_SHIFT
+    });
+
+    try{
+        const response = await shiftService.checkStartedShiftForCashier(cashierId);
+        const { cashRegisterId } = response;
+        return dispatch({ type: CHECK_STARTED_SHIFT_SUCCESS, cashRegisterId });
+    }catch(error){
+        errorActions.showError("There is no started shift");
+        return dispatch({ type: CHECK_STARTED_SHIFT_FAIL, error });
+    }
+}
+
 const reducer = (state = initialState, action) => {
     switch(action.type) {
         case HAS_TOKEN:
@@ -88,9 +107,9 @@ const reducer = (state = initialState, action) => {
             }
         case HAS_TOKEN_SUCCESS:
             return {
+                ...state,
                 ...action.user,
                 loading: false,
-                cashRegisterId: -1
             }
         case LOGIN:
             return {
@@ -99,6 +118,7 @@ const reducer = (state = initialState, action) => {
             }
         case LOGIN_SUCCESS:
             return {
+                ...state,
                 ...action.user,
                 loading: false,
             }
@@ -109,9 +129,9 @@ const reducer = (state = initialState, action) => {
             }
         case REGISTER_SUCCESS:
             return {
+                ...state,
                 ...action.user,
                 loading: false,
-                cashRegisterId: -1
             }
         case CONNECT_CASHREGISTER:
             return {
@@ -149,6 +169,28 @@ const reducer = (state = initialState, action) => {
                 loading: false,
                 error: false
             }
+        case CHECK_STARTED_SHIFT: {
+            return {
+                ...state,
+                loading: true,
+                error: false
+            }
+        }
+        case CHECK_STARTED_SHIFT_SUCCESS: {
+            return {
+                ...state,
+                cashRegisterId: action.cashRegisterId,
+                loading: false,
+                error: false
+            }
+        }
+        case CHECK_STARTED_SHIFT_FAIL: {
+            return {
+                ...state,
+                loading: false,
+                error: true
+            }
+        }
         default:
             return {
                 ...state
