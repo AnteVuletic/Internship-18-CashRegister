@@ -49,6 +49,8 @@ class HistoryReceipt extends React.Component{
                                     <span>Excise tax amount:{receipt.exciseTaxAtCreation}</span>
                                     <span>Pre tax total:{receipt.preTaxPriceAtCreation}</span>
                                     <span>Post tax total:{receipt.postTaxPriceAtCreation}</span>
+                                    <span>Cashier identification:{receipt.cashRegisterCashier.cashierId}</span>
+                                    <span>Cash register identification:{receipt.cashRegisterCashier.cashRegisterId}</span>
                                     <div className="products-section">
                                     {
                                         productReports.map((productReport,productIndex)=>{

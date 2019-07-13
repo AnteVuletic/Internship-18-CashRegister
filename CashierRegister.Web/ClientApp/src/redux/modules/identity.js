@@ -12,8 +12,8 @@ const CONNECT_CASHREGISTER = "CONNECT_CASHREGISTER";
 const CONNECT_CASHREGISTER_SUCCESS = "CONNECT_CASHREGISTER_SUCCESS";
 const CONNECT_CASHREGISTER_FAIL = "CONNECT_CASHREGISTER_FAIL";
 const DISCONNECT_CASHREGISTER = "DISCONNECT_CASHREGISTER";
-const DISCONNECT_CASHREGISTER_SUCCESS = "CONNECT_CASHREGISTER_SUCCESS";
-const DISCONNECT_CASHREGISTER_FAIL = "CONNECT_CASHREGISTER_FAIL";
+const DISCONNECT_CASHREGISTER_SUCCESS = "DISCONNECT_CASHREGISTER_SUCCESS";
+const DISCONNECT_CASHREGISTER_FAIL = "DISCONNECT_CASHREGISTER_FAIL";
 const CHECK_STARTED_SHIFT = "CHECK_STARTED_SHIFT";
 const CHECK_STARTED_SHIFT_SUCCESS = "CHECK_STARTED_SHIFT_SUCCESS";
 const CHECK_STARTED_SHIFT_FAIL = "CHECK_STARTED_SHIFT_FAIL";
@@ -76,7 +76,7 @@ export const disconnectCashRegister = (cashierId, cashRegisterId) => async dispa
 
     try{
         const response = await shiftService.endShift(cashierId, cashRegisterId);
-        return dispatch({ type: CONNECT_CASHREGISTER_SUCCESS, cashRegisterId });
+        return dispatch({ type: DISCONNECT_CASHREGISTER_SUCCESS });
     }catch(error){
         errorActions.showError("Failed to end shift");
         return dispatch({ type: DISCONNECT_CASHREGISTER_FAIL, error })
@@ -167,9 +167,9 @@ const reducer = (state = initialState, action) => {
         case DISCONNECT_CASHREGISTER_SUCCESS:
             return {
                 ...state,
+                cashRegisterId: -1,
                 loading: false,
-                error: null,
-                cashRegisterId: -1
+                error: null
             }
         case DISCONNECT_CASHREGISTER_FAIL:
             return {

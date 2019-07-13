@@ -99,6 +99,7 @@ namespace CashierRegister.Domain.Repositories.Implementations
                 _dbCashierRegisterContext.Receipts
                     .Include(receipt => receipt.ReceiptProducts)
                     .ThenInclude(receiptProduct => receiptProduct.Product)
+                    .Include(receipt => receipt.CashRegisterCashier)
                     .Where(receipt => receipt.DateTimeCreated.Year == date.Year);
             if (date.Month != 0)
             {

@@ -88,7 +88,7 @@ class LoginPage extends React.Component{
                 </form>
                 <footer className="login__footer">
                     <button onClick={()=> this.setState({isLogin: true}) }>Login</button>
-                    <button onClick={()=> this.setState({isLogin: false})}>Register</button>
+                    {/* <button onClick={()=> this.setState({isLogin: false})}>Register</button> */}
                 </footer>
             </div>
         );

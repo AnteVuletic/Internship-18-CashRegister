@@ -7,4 +7,5 @@ export default _ =>
     <Link to="/">Home</Link>
     <Link to="/products">Products</Link>
     <Link to="/receipts/createReceipt">Receipts</Link>
+    <Link to="/login" onClick={() => window.localStorage.removeItem('token')}>Log out</Link>
 </nav>
