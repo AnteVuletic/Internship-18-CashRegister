@@ -44,6 +44,9 @@ class CashRegisterList extends React.Component{
     render(){
         const { cashRegisters, deleteCashRegister, editCashRegister, connectCashRegister, disconnectCashRegister, identity } = this.props;
         const { isAddForm } = this.state;
+        if(identity.loading || cashRegisters.loading){
+            return <div className="lds-dual-ring"></div>
+        }
         const addForm = isAddForm ?
             <form className="addForm" onSubmit={this.handleAddCashierRegister}>
                 <div className="formWrapper">

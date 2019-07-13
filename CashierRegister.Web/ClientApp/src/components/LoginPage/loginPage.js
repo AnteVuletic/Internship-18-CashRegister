@@ -65,6 +65,12 @@ class LoginPage extends React.Component{
 
     render(){
         const { isLogin, hasLoginFailed, isPasswordMissmatch } = this.state;
+        const { loading } = this.props.identity;
+        if(loading){
+            return <div className="lds-dual-ring">
+
+            </div>
+        }
         const passwordMissmatchWarningMessage = isPasswordMissmatch&&!isLogin ? <div>Password missmatch try again</div> : "";
         const loginFailedWarningMessage = hasLoginFailed&&isLogin ? <div>Login has failed try again</div> : "";
     const registerRepeatPasswordInput = !isLogin ? <input name="repeatPassword" type="text" placeholder="Repeat password" onChange={this.handleInputChange} /> : "";

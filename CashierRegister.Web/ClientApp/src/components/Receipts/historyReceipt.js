@@ -26,8 +26,10 @@ class HistoryReceipt extends React.Component{
 
     render(){
         const { date } = this.state;
-        const { receipts } = this.props;
-        console.log(receipts);
+        const { receipts, receipt } = this.props;
+        if(receipt.loading){
+            return <div className="lds-dual-ring"></div>
+        }
         return(
             <div>
                 <div className="date-picker">
@@ -72,7 +74,8 @@ class HistoryReceipt extends React.Component{
 }
 
 const MapStateToProps = state => ({
-    receipts: state.receipt.receipts
+    receipts: state.receipt.receipts,
+    receipt: state.receipt
 });
 
 const MapDispatchToProps = {

@@ -113,7 +113,6 @@ class ProductList extends React.Component{
     handleProductFilter = () => {
         const { deleteProduct, editProduct, productsOnReceipt } = this.props;
         const { productsInState, filteredProducts, taxTypesInState, searchQuery, isReceipt} = this.state;
-
         if(searchQuery.length < 3 )
             return productsInState.map((product,index) => {
                         return <ProductElement
@@ -155,7 +154,11 @@ class ProductList extends React.Component{
     }
 
     render(){
-        const { isAddForm, isNewExcise, searchQuery, taxTypesInState, isReceipt } = this.state;
+        const { isAddForm, isNewExcise, searchQuery, taxTypesInState, isReceipt} = this.state;
+        const { products, taxTypes, product } = this.props;
+        if(product.loading){
+            return <div className="lds-dual-ring"></div>
+        }
         
         const displayProducts = this.handleProductFilter();
 
@@ -230,7 +233,8 @@ class ProductList extends React.Component{
 const MapStateToProps = state => ({
     products: state.product.products,
     taxTypes: state.product.taxTypes,
-    productsOnReceipt: state.receipt.productsOnNewReceipt
+    productsOnReceipt: state.receipt.productsOnNewReceipt,
+    product: state.product
 });
 
 const MapDispatchToProps = {
