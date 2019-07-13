@@ -34,12 +34,11 @@ namespace CashierRegister.Web.Controllers
             return Ok(receiptSavedDto);
         }
 
-
-        [HttpGet("{id}")]
-        public Receipt ReadReceipt(Guid id)
+        [HttpPost]
+        public IActionResult GetReceiptsByDate([FromBody] dynamic payload)
         {
-            return _receiptRepository.ReadReceipt(id);
+            var productsOnDate = _receiptRepository.GetReceiptsByDate(Convert.ToDateTime(payload.date));
+            return Ok(productsOnDate);
         }
-
     }
 }

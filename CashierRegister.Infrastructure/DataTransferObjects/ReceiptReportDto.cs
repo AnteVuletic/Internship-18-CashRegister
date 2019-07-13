@@ -5,9 +5,9 @@ using CashierRegister.Data.Entities.Models;
 
 namespace CashierRegister.Infrastructure.DataTransferObjects
 {
-    public class ReceiptDto
+    public class ReceiptReportDto
     {
         public Receipt Receipt { get; set; }
-        public ICollection<ProductDto> ProductsOnReceipt { get; set; }
+        public ICollection<ProductReportDto> ProductReports{ get; set; }
     }
 }

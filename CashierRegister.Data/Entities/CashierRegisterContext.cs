@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using CashierRegister.Data.Entities.Models;
+using CashierRegister.Data.ExampleDataSeeds;
 using Microsoft.EntityFrameworkCore;
 
 namespace CashierRegister.Data.Entities
@@ -24,14 +25,6 @@ namespace CashierRegister.Data.Entities
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<CashRegisterCashier>()
-                .HasKey(cashRegisterCashier => new
-                        {
-                            cashRegisterCashier.CashRegisterId,
-                            cashRegisterCashier.CashierId
-                        }
-                );
-
             modelBuilder.Entity<CashRegisterCashier>()
                 .HasOne(cashRegisterCashier => cashRegisterCashier.CashRegister)
                 .WithMany(cashRegister => cashRegister.CashRegisterCashiers)
@@ -69,6 +62,8 @@ namespace CashierRegister.Data.Entities
                 .HasOne(productTax => productTax.Tax)
                 .WithMany(taxes => taxes.ProductTaxes)
                 .HasForeignKey(productTax => productTax.TaxId);
+
+            DataSeed.Seed(modelBuilder);
         }
     }
 }

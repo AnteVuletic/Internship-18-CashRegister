@@ -23,7 +23,7 @@ const initialState = {
     cashierId: -1,
     token: '',
     loading: false,
-    error: false,
+    error: null,
     cashRegisterId: -1
 }
 
@@ -103,77 +103,85 @@ const reducer = (state = initialState, action) => {
         case HAS_TOKEN:
             return {
                 ...state,
-                loading: true
+                loading: true,
+                error: null
             }
         case HAS_TOKEN_SUCCESS:
             return {
                 ...state,
                 ...action.user,
                 loading: false,
+                error: null
             }
         case LOGIN:
             return {
                 ...state,
-                loading: true
+                loading: true,
+                error: null
             }
         case LOGIN_SUCCESS:
             return {
                 ...state,
                 ...action.user,
                 loading: false,
+                error: null
             }
         case REGISTER:
             return {
                 ...state,
-                loading: true
+                loading: true,
+                error: null
             }
         case REGISTER_SUCCESS:
             return {
                 ...state,
                 ...action.user,
                 loading: false,
+                error: null
             }
         case CONNECT_CASHREGISTER:
             return {
                 ...state,
-                loading: true
+                loading: true,
+                error: null
             }
         case CONNECT_CASHREGISTER_SUCCESS:
             return {
                 ...state,
                 cashRegisterId: action.cashRegisterId,
                 loading: false,
-                error: false
+                error: null
             }
         case CONNECT_CASHREGISTER_FAIL:
             return {
                 ...state,
                 loading: false,
-                error: true
+                error: action.error
             }
         case DISCONNECT_CASHREGISTER:
             return {
                 ...state,
-                loading: true
+                loading: true,
+                error: null
             }
         case DISCONNECT_CASHREGISTER_SUCCESS:
             return {
                 ...state,
                 loading: false,
-                error: false,
+                error: null,
                 cashRegisterId: -1
             }
         case DISCONNECT_CASHREGISTER_FAIL:
             return {
                 ...state,
                 loading: false,
-                error: false
+                error: action.error
             }
         case CHECK_STARTED_SHIFT: {
             return {
                 ...state,
                 loading: true,
-                error: false
+                error: null
             }
         }
         case CHECK_STARTED_SHIFT_SUCCESS: {
@@ -181,14 +189,14 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 cashRegisterId: action.cashRegisterId,
                 loading: false,
-                error: false
+                error: null
             }
         }
         case CHECK_STARTED_SHIFT_FAIL: {
             return {
                 ...state,
                 loading: false,
-                error: true
+                error: action.error
             }
         }
         default:

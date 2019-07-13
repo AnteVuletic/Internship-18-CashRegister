@@ -159,7 +159,7 @@ input, option, select, button{
     position: relative;
     display: flex;
     overflow-y: scroll;
-    height: 60vw;
+    height: 90vw;
     width: 100%;
 }
 
@@ -172,7 +172,7 @@ input, option, select, button{
 
 .receipt-section{
     width: 50%;
-    height: 100%;
+    height: 50%;
     position: sticky;
     display: inline-block;
     background-color: #00baba;
@@ -199,4 +199,36 @@ input, option, select, button{
     justify-content: space-around;
     padding: 15px 0;
     background-color: #242582;
+}
+
+.receipts-result{
+    color: white;
+    font-family: sans-serif;
+    font-size: 15px;
+}
+
+.receipts-result article{
+    display: block;
+    background-color: #242582;
+    margin-bottom: 10px;
+}
+
+.receipts-result span{
+    display: block;
+}
+
+.products-section {
+    display: flex;
+    justify-content: space-around;
+}
+
+.products-section div{
+    background-color: #F64C72;
+    margin-left: 5px;
+}
+
+.date-picker{
+    width: fit-content;
+    display: block;
+    margin: 0 auto;
 }

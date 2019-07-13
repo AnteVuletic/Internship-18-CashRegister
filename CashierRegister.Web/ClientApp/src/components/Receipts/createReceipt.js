@@ -1,8 +1,10 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { removeProduct, clearReceipt, createReceipt } from '../../redux/modules/receipt';
 import { getProducts } from '../../redux/modules/product';
 import { connect } from 'react-redux';
 import ProductList from '../Products/productList';
+import { Printd } from 'printd';
 import '../styles/forms.css';
 
 class CreateReceipt extends React.Component{
@@ -19,9 +21,50 @@ class CreateReceipt extends React.Component{
         this.props.clearReceipt();
     }
 
+    handlePrint = (receiptDto) => {
+        const { receipt, productReports } = receiptDto;
+        return(
+            <article>
+                <span>Receipt ID:{receipt.id}</span>
+                <span>Time created:{receipt.dateTimeCreated}</span>
+                <span>Direct tax amount:{receipt.directTaxAtCreation}</span>
+                <span>Excise tax amount:{receipt.exciseTaxAtCreation}</span>
+                <span>Pre tax total:{receipt.preTaxPriceAtCreation}</span>
+                <span>Post tax total:{receipt.postTaxPriceAtCreation}</span>
+                <div className="products-section">
+                {
+                    productReports.map((productReport,productIndex)=>{
+                        return(
+                            <div key={productIndex}>
+                                <span>Product Name:{productReport.name}</span>
+                                <span>Excise percentage:{productReport.excisePercentage}</span>
+                                <span>Amount of products:{productReport.productCount}</span>
+                                <span>Product price:{productReport.productPrice}</span>
+                            </div>
+                        )
+                    })
+                }
+                </div>
+            </article>
+        );
+    }
+
     handleCreateReceipt = () => {
         const { productsOnReceipt, identity, createReceipt } = this.props;
-        createReceipt(identity, productsOnReceipt).then(() => {
+        createReceipt(identity, productsOnReceipt)
+        .then((response) =>{
+            const printStyle = `
+                span{
+                    display: block;
+                }
+            `;
+            const receiptPrint = new Printd;
+            const elementToPrint = this.handlePrint(response);
+            let receiptDomElement = document.createElement("div");
+            ReactDOM.render(elementToPrint, receiptDomElement)
+            receiptPrint.print(receiptDomElement,[printStyle]);
+        })
+        .then(() => {
             this.props.clearReceipt();
             this.props.getProducts();
         }); 
@@ -30,7 +73,14 @@ class CreateReceipt extends React.Component{
     render(){
         const { productsOnReceipt,identity } = this.props;
         if(identity.cashRegisterId == -1){
-            window.location = "/";
+            return(
+                <div>
+                    Make sure you connect to cash register first.
+                    <button onClick={()=>{
+                        window.location = "/";
+                    }}>Go to cash register</button>
+                </div>
+            )
         }
         return(
         <div className="create-receipt-wrapper">

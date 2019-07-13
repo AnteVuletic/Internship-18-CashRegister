@@ -17,8 +17,22 @@ const CREATE_RECEIPT_FAIL = "CREATE_RECEIPT_FAIL";
 const initialState = {
     productsOnNewReceipt: [],
     receipts: [],
-    error: false,
+    error: null,
     loading: false
+}
+
+export const getReceiptsByDate = (date) => async dispatch => {
+    dispatch({
+        type: GET_RECEIPTS_BY_DATE
+    });
+
+    try{
+        const response = await ReceiptService.getReceiptsByDate(date);
+        return dispatch({ type: GET_RECEIPTS_BY_DATE_SUCCESS, receipts: response})
+    }catch(error){
+        dispatch(errorActions.showError("Error getting products by date"));
+        return dispatch({ type: GET_RECEIPTS_BY_DATE_FAIL, error });
+    }
 }
 
 export const getAndPushProduct = (id, productCount) => async dispatch => {
@@ -67,21 +81,23 @@ const reducer = (state = initialState, action ) =>{
         case GET_AND_PUSH_PRODUCT: {
             return{
                 ...state,
-                loading: true
+                loading: true,
+                error: null
             }
         }
         case GET_AND_PUSH_PRODUCT_SUCCESS: {
             return{
                 ...state,
                 productsOnNewReceipt: [...state.productsOnNewReceipt, action.product],
-                loading: false
+                loading: false,
+                error: null
             }
         }
         case GET_AND_PUSH_PRODUCT_FAIL: {
             return{
                 ...state,
                 loading: false,
-                error: true
+                error: action.error
             }
         }
         case REMOVE_PRODUCT: {
@@ -90,34 +106,57 @@ const reducer = (state = initialState, action ) =>{
                 ...state,
                 productsOnNewReceipt: newProducts,
                 loading: false,
-                error: false
+                error: null
             }
         }
         case CREATE_RECEIPT: {
             return {
                 ...state,
                 loading: true,
-                error: false
+                error: null
             }
         }
         case CREATE_RECEIPT_SUCCESS: {
             return {
                 ...state,
                 loading: false,
-                error: false
+                error: null
             }
         }
         case CREATE_RECEIPT_FAIL: {
             return {
                 ...state,
                 loading: false,
-                error: true
+                error: action.error
             }
         }
         case CLEAR_RECEIPT: {
             return {
                 ...state,
-                productsOnNewReceipt: []
+                productsOnNewReceipt: [],
+                error: null
+            }
+        }
+        case GET_RECEIPTS_BY_DATE: {
+            return {
+                ...state,
+                loading: true,
+                error: null
+            }
+        }
+        case GET_RECEIPTS_BY_DATE_SUCCESS: {
+            return {
+                ...state,
+                receipts: action.receipts,
+                loading: false,
+                error: null
+            }
+        }
+        case GET_RECEIPTS_BY_DATE_FAIL: {
+            return {
+                ...state,
+                loading: false,
+                error: action.error
             }
         }
         default: {

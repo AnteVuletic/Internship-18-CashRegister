@@ -7,7 +7,6 @@ using CashierRegister.Data.Entities.Models;
 using CashierRegister.Data.Enums;
 using CashierRegister.Domain.Repositories.Interfaces;
 using CashierRegister.Infrastructure.DataTransferObjects;
-using CashierRegister.Web.DataSeeds;
 
 namespace CashierRegister.Domain.Repositories.Implementations
 {
@@ -85,22 +84,33 @@ namespace CashierRegister.Domain.Repositories.Implementations
 
         public ICollection<ProductDto> ReadProducts()
         {
-            var productsDtoList = new List<ProductDto>();
-
             var productQueryable = _dbCashierRegisterContext.Products;
             var taxesQueryable = _dbCashierRegisterContext.Taxes;
 
-            foreach (var product in productQueryable)
-            {
-                var taxOnProduct = taxesQueryable.First(tax => tax.ProductTaxes.Any(productTax => productTax.ProductId == product.Id) && tax.TaxType == TaxType.Excise);
-                productsDtoList.Add(new ProductDto
-                {
-                    Product = product,
-                    ProductTax = taxOnProduct
-                });
-            }
+            var productsDtoList = _createProductDtoCollection(productQueryable, taxesQueryable);
 
             return productsDtoList;
+        }
+
+        public ICollection<ProductDto> ReadProductsByName(string searchFilter)
+        { 
+            var productsFilteredQueryable = _dbCashierRegisterContext.Products.Where(product =>
+                product.Name.ToLower().Contains(searchFilter.ToLower()));
+            var taxesQueryable = _dbCashierRegisterContext.Taxes;
+
+            var productsDtoList = _createProductDtoCollection(productsFilteredQueryable, taxesQueryable);
+
+            return productsDtoList;
+        }
+
+        public ProductDto ReadProductById(Guid id)
+        {
+            var productWithId = _dbCashierRegisterContext.Products.Find(id);
+            var taxesQueryable = _dbCashierRegisterContext.Taxes;
+
+            var productDtoWithId = _createProductDto(productWithId, taxesQueryable);
+
+            return productDtoWithId;
         }
 
         public bool EditProduct(Product productEdited,Tax taxEdited)
@@ -152,6 +162,34 @@ namespace CashierRegister.Domain.Repositories.Implementations
             _dbCashierRegisterContext.SaveChanges();
 
             return true;
+        }
+
+        private ICollection<ProductDto> _createProductDtoCollection(IQueryable<Product> productQueryable, IQueryable<Tax> taxesQueryable)
+        {
+            var productsDtoList = new List<ProductDto>();
+            foreach (var product in productQueryable)
+            {
+                var taxOnProduct = taxesQueryable.First(tax => tax.ProductTaxes.Any(productTax => productTax.ProductId == product.Id) && tax.TaxType == TaxType.Excise);
+                productsDtoList.Add(new ProductDto
+                {
+                    Product = product,
+                    ProductTax = taxOnProduct
+                });
+            }
+
+            return productsDtoList;
+        }
+
+        private ProductDto _createProductDto(Product productWithId, IQueryable<Tax> taxesQueryable)
+        {
+            var taxOnProduct = taxesQueryable.First(tax => tax.ProductTaxes.Any(productTax => productTax.ProductId == productWithId.Id) && tax.TaxType == TaxType.Excise);
+            var productDtoWithId = new ProductDto
+            {
+                Product = productWithId,
+                ProductTax = taxOnProduct
+            };
+
+            return productDtoWithId;
         }
     }
 }

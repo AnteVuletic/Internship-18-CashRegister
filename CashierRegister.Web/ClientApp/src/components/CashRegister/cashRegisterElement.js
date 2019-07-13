@@ -53,7 +53,7 @@ class CashRegisterElement extends React.Component{
     render(){
         const { id, connectCashRegister, disconnectCashRegister, identity } = this.props;
         const { isEdit, location } = this.state;
-        console.log("I re-rendered");
+        
         const connectOrDisconnect = identity.cashRegisterId === -1 ?
         <button onClick={() => connectCashRegister(identity.cashierId,id)}>
             Connect

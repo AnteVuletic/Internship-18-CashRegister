@@ -5,7 +5,9 @@ using System.Text;
 using CashierRegister.Data.Entities;
 using CashierRegister.Data.Entities.Models;
 using CashierRegister.Data.Enums;
+using CashierRegister.Domain.DataSeeds;
 using CashierRegister.Domain.Repositories.Interfaces;
+using CashierRegister.Infrastructure.DataTransferObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic.CompilerServices;
 
@@ -13,87 +15,132 @@ namespace CashierRegister.Domain.Repositories.Implementations
 {
     public class ReceiptRepository : RepositoryAbstraction, IReceiptRepository
     {
-        public ReceiptRepository(CashierRegisterContext cashierRegisterContext) : base(cashierRegisterContext) {}
-
-        public Receipt CreateReceipt(int cashRegisterCashierId,ICollection<Product> products)
+        public ReceiptRepository(CashierRegisterContext cashierRegisterContext) : base(cashierRegisterContext)
         {
-            var cashRegisterCashierWithId = _dbCashierRegisterContext.CashRegisterCashiers.Find(cashRegisterCashierId);
+            ReceiptSeed.Seed(cashierRegisterContext);
+        }
 
-            if(cashRegisterCashierWithId == null)
-                throw new Exception($"Invalid cash register ID: {cashRegisterCashierId}");
+        public ReceiptReportDto CreateReceipt(ReceiptDto receiptDtoToCreate)
+        {
+            var cashRegisterCashierWithIds = _dbCashierRegisterContext.CashRegisterCashiers
+                .Include(cashRegisterCashier => cashRegisterCashier.Cashier)
+                .Include(cashRegisterCashier => cashRegisterCashier.CashRegister)
+                .Single(shift =>
+                        shift.CashRegisterId == receiptDtoToCreate.Receipt.CashRegisterCashier.CashRegisterId &&
+                        shift.CashierId == receiptDtoToCreate.Receipt.CashRegisterCashier.CashierId && 
+                        shift.EndOfShift == DateTime.MinValue);
 
             var id = new Guid();
             var newReceipt = new Receipt
             {
                 Id = id,
-                CashRegisterCashierId = cashRegisterCashierId,
-                CashRegisterCashier = cashRegisterCashierWithId
+                CashRegisterCashier = cashRegisterCashierWithIds,
+                DateTimeCreated = DateTime.Now
             };
 
             _dbCashierRegisterContext.Receipts.Add(newReceipt);
             _dbCashierRegisterContext.SaveChanges();
 
-            foreach (var product in products)
+            foreach (var product in receiptDtoToCreate.ProductsOnReceipt)
             {
-                CreateReceiptProduct(newReceipt.Id, product.Id);
+                CreateReceiptProduct(newReceipt.Id, product.Product.Id, (int)product.ProductCount);
             }
 
-            var allProductsOnReceipt =
+            var preTaxTotal = receiptDtoToCreate.ProductsOnReceipt.Sum(product => product.Product.Price * product.ProductCount);
+            var exciseTotal = receiptDtoToCreate.ProductsOnReceipt.Sum(product =>
+                product.Product.Price *
+                _dbCashierRegisterContext.Taxes.Single(tax => tax.TaxType == TaxType.Excise && tax.ProductTaxes.Any(prd => prd.ProductId == product.Product.Id)).Percentage / 100 * 
+                product.ProductCount);
+            var directTotal = receiptDtoToCreate.ProductsOnReceipt.Sum(product =>
+                product.Product.Price *
+                _dbCashierRegisterContext.Taxes.Single(tax => tax.TaxType == TaxType.Direct && tax.ProductTaxes.Any(prd => prd.ProductId == product.Product.Id)).Percentage / 100 *
+                product.ProductCount);
+            var postTaxTotal = preTaxTotal + exciseTotal + directTotal;
+
+            if (preTaxTotal != null) newReceipt.PreTaxPriceAtCreation = (int) preTaxTotal;
+            if (exciseTotal != null) newReceipt.ExciseTaxAtCreation = (int) exciseTotal;
+            if (directTotal != null) newReceipt.DirectTaxAtCreation = (int) directTotal;
+            if (postTaxTotal != null) newReceipt.PostTaxPriceAtCreation = (int) postTaxTotal;
+
+            _dbCashierRegisterContext.SaveChanges();
+
+
+            var productReportDtoList = new List<ProductReportDto>();
+            var productReceipts =
                 _dbCashierRegisterContext.ReceiptProducts.Where(receiptProducts =>
                     receiptProducts.ReceiptId == newReceipt.Id);
 
-            var preTaxTotal = allProductsOnReceipt.Sum(product => product.Product.Price);
-            var exciseTotal = allProductsOnReceipt.Sum(product =>
-                product.Product.Price * product.Product.ProductTaxes
-                    .Single(productTax => productTax.Tax.TaxType == TaxType.Excise).Tax.Percentage);
-            var directTotal = allProductsOnReceipt.Sum(product =>
-                product.Product.Price * product.Product.ProductTaxes
-                    .Single(productTax => productTax.Tax.TaxType == TaxType.Direct).Tax.Percentage);
-            var postTaxTotal = preTaxTotal + exciseTotal + directTotal;
+            foreach (var receiptProduct in productReceipts)
+            {
+                productReportDtoList.Add(new ProductReportDto
+                {
+                    Name = receiptProduct.Product.Name,
+                    ExcisePercentage = receiptProduct.ProductExcisePercentageAtCreation,
+                    ProductDirectPercentage = receiptProduct.ProductDirectPercentageAtCreation,
+                    ProductCount = receiptProduct.ProductCount,
+                    ProductPrice = receiptProduct.ProductPriceAtCreation
+                });
+            }
 
-            newReceipt.PreTaxPriceAtCreation = preTaxTotal;
-            newReceipt.ExciseTaxAtCreation = exciseTotal;
-            newReceipt.DirectTaxAtCreation = directTotal;
-            newReceipt.PostTaxPriceAtCreation = postTaxTotal;
+            var receiptReportDto = new ReceiptReportDto
+            {
+                Receipt = newReceipt,
+                ProductReports = productReportDtoList
+            };
 
-            return newReceipt;
+            return receiptReportDto;
         }
 
-        public Receipt ReadReceipt(Guid id)
+        public ICollection<ReceiptReportDto> GetReceiptsByDate(DateTime date)
         {
-            var receiptInQuestion = _dbCashierRegisterContext.Receipts.Include(receipt => receipt.ReceiptProducts)
-                .ThenInclude(receiptProducts => receiptProducts.Product).FirstOrDefault(receipt => receipt.Id == id);
+            var receiptsDtoOnDate = new List<ReceiptReportDto>();
 
-            if (receiptInQuestion == null)
-                throw new Exception($"No receipt with ID: {id}");
+            var receiptsOnDate =
+                _dbCashierRegisterContext.Receipts
+                    .Include(receipt => receipt.ReceiptProducts)
+                    .ThenInclude(receiptProduct => receiptProduct.Product)
+                    .Where(receipt => receipt.DateTimeCreated.Year == date.Year);
+            if (date.Month != 0)
+            {
+                receiptsOnDate = receiptsOnDate.Where(receipt => receipt.DateTimeCreated.Month == date.Month);
+                if(date.Day != 0)
+                    receiptsOnDate = receiptsOnDate.Where(receipt => receipt.DateTimeCreated.Day == date.Day);
+            }
 
-            return receiptInQuestion;
+            foreach (var receipt in receiptsOnDate)
+            {
+                var productReportDtoList = new List<ProductReportDto>();
+                foreach (var receiptProduct in receipt.ReceiptProducts)
+                {
+                    productReportDtoList.Add(new ProductReportDto
+                    {
+                       Name = receiptProduct.Product.Name,
+                       ExcisePercentage = receiptProduct.ProductExcisePercentageAtCreation,
+                       ProductDirectPercentage = receiptProduct.ProductDirectPercentageAtCreation,
+                       ProductCount = receiptProduct.ProductCount,
+                       ProductPrice = receiptProduct.ProductPriceAtCreation
+                    });
+                }
+                receiptsDtoOnDate.Add(new ReceiptReportDto()
+                {
+                    Receipt = receipt,
+                    ProductReports = productReportDtoList
+                });
+            }
+
+            return receiptsDtoOnDate;
         }
 
-        public bool DeleteReceipt(Guid id)
-        {
-            var receiptInQuestion = ReadReceipt(id);
-
-            _dbCashierRegisterContext.Receipts.Remove(receiptInQuestion);
-            _dbCashierRegisterContext.SaveChanges();
-
-            return true;
-        }
-
-        public IQueryable<Receipt> ReadReceiptByCashRegisterCashierId(int cashRegisterCashierId)
-        {
-            var receiptsInQuestion = _dbCashierRegisterContext.Receipts.Where(receipt =>
-                receipt.CashRegisterCashierId == cashRegisterCashierId);
-
-            return receiptsInQuestion;
-        }
-        private void CreateReceiptProduct(Guid receiptId, Guid productId)
+        private void CreateReceiptProduct(Guid receiptId, Guid productId, int productCount)
         {
             var receiptInQuestion = _dbCashierRegisterContext.Receipts.Find(receiptId);
-            var productInQuestion = _dbCashierRegisterContext.Products.Find(productId);
+            var productInQuestion = _dbCashierRegisterContext.Products.Single(product => product.Id == productId);
 
             if (receiptInQuestion == null || productInQuestion == null)
                 throw new Exception("Receipt or product not exists");
+
+            if (productInQuestion.CountInStorage < productCount)
+                throw new Exception("Product count in storage less then product count.");
 
             var newReceiptProduct = new ReceiptProduct
             {
@@ -101,11 +148,17 @@ namespace CashierRegister.Domain.Repositories.Implementations
                 ProductId = productId,
                 Receipt = receiptInQuestion,
                 ReceiptId = receiptId,
-                ProductDirectPercentageAtCreation = productInQuestion.ProductTaxes.Single(productTaxes => productTaxes.Tax.TaxType == TaxType.Direct).Tax.Percentage,
-                ProductExcisePercentageAtCreation = productInQuestion.ProductTaxes.Single(productTaxes => productTaxes.Tax.TaxType == TaxType.Excise).Tax.Percentage
+                ProductCount = productCount,
+                ProductDirectPercentageAtCreation = _dbCashierRegisterContext.Taxes.Single(tax => tax.TaxType == TaxType.Direct && tax.ProductTaxes.Any(product => product.ProductId == productId)).Percentage,
+                ProductExcisePercentageAtCreation = _dbCashierRegisterContext.Taxes.Single(tax => tax.TaxType == TaxType.Excise && tax.ProductTaxes.Any(product => product.ProductId == productId)).Percentage,
+                ProductPriceAtCreation = productInQuestion.Price
             };
 
             _dbCashierRegisterContext.ReceiptProducts.Add(newReceiptProduct);
+            _dbCashierRegisterContext.SaveChanges();
+
+            productInQuestion.CountInStorage -= productCount;
+
             _dbCashierRegisterContext.SaveChanges();
         }
     }

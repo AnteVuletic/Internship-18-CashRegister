@@ -12,17 +12,17 @@ namespace CashierRegister.Domain.Repositories.Implementations
     {
         public CashRegisterCashierRepository(CashierRegisterContext cashierRegisterContext) : base(cashierRegisterContext) {}
 
-        public bool StartShift(int cashierId, int cashRegister)
+        public bool StartShift(int cashierId, int cashRegisterId)
         {
-            var cashierWithId = _dbCashierRegisterContext.Cashiers.Find(cashierId);
-            var cashierRegisterWithId = _dbCashierRegisterContext.CashRegisters.Find(cashRegister);
+            var cashierWithId = _dbCashierRegisterContext.Cashiers.First(cashier => cashier.Id == cashierId);
+            var cashierRegisterWithId = _dbCashierRegisterContext.CashRegisters.First(cashRegister => cashRegister.Id == cashRegisterId);
 
             if (cashierWithId == null || cashierRegisterWithId == null)
                 throw new Exception("Invalid Cashier or CashierRegister ID");
 
             var shift = new CashRegisterCashier
             {
-                CashRegisterId = cashRegister,
+                CashRegisterId = cashRegisterId,
                 CashRegister = cashierRegisterWithId,
                 CashierId = cashierId,
                 Cashier = cashierWithId,
@@ -50,13 +50,20 @@ namespace CashierRegister.Domain.Repositories.Implementations
             return shiftsByCashier;
         }
 
+        public CashRegisterCashier GetStartedShiftOrDefault(int cashierId)
+        {
+            var openShift = _dbCashierRegisterContext.CashRegisterCashiers.SingleOrDefault(cashRegisterCashier =>
+                cashRegisterCashier.CashierId == cashierId && cashRegisterCashier.EndOfShift == DateTime.MinValue);
+            return openShift;
+        }
+
         public bool EndShift(int cashierId, int cashRegisterId)
         {
             var shiftToEnd = _dbCashierRegisterContext.CashRegisterCashiers
                 .FirstOrDefault(cashRegisterCashier =>
                     cashRegisterCashier.CashierId == cashierId &&
                     cashRegisterCashier.CashRegisterId == cashRegisterId &&
-                    cashRegisterCashier.EndOfShift == null
+                    cashRegisterCashier.EndOfShift == DateTime.MinValue
                 );
             
             if(shiftToEnd == null)

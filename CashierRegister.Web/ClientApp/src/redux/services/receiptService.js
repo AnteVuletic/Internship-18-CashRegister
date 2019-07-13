@@ -19,3 +19,13 @@ export const createReceipt = (identity, products) => {
         headers: AUTHORIZATION_HEADER()
     }).then(response => response.json());
 }
+
+export const getReceiptsByDate = (date) =>{
+    return fetchInterceptor(`${endpointBase}/GetReceiptsByDate`,{
+        method: 'POST',
+        body: JSON.stringify({
+            date
+        }),
+        headers: AUTHORIZATION_HEADER()
+    }).then(response => response.json());
+}

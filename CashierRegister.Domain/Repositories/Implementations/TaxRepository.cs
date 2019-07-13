@@ -5,16 +5,12 @@ using System.Text;
 using CashierRegister.Data.Entities;
 using CashierRegister.Data.Entities.Models;
 using CashierRegister.Domain.Repositories.Interfaces;
-using CashierRegister.Web.DataSeeds;
 
 namespace CashierRegister.Domain.Repositories.Implementations
 {
     public class TaxRepository : RepositoryAbstraction, ITaxRepository
     {
-        public TaxRepository(CashierRegisterContext cashierRegisterContext) : base(cashierRegisterContext)
-        {
-            TaxSeed.CreateTaxSeed(cashierRegisterContext);
-        }
+        public TaxRepository(CashierRegisterContext cashierRegisterContext) : base(cashierRegisterContext) { }
 
         public IQueryable<Tax> ReadTaxes()
         {

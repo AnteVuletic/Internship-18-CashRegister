@@ -180,7 +180,7 @@ class ProductElement extends React.Component{
                 <input className="submit" type="submit" value="Submit"/> 
             </form>
         </div>;
-        if(countInStorage <= 0 || productsOnReceipt.find(product => product.product.id === id ))
+        if((countInStorage <= 0 && isReceipt ) || productsOnReceipt.find(product => product.product.id === id ))
             return <div></div>
         return (
             <article className="element">

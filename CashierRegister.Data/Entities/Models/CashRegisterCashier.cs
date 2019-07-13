@@ -8,6 +8,7 @@ namespace CashierRegister.Data.Entities.Models
 {
     public class CashRegisterCashier
     {
+        public int Id { get; set; }
         [JsonProperty("cashierId")]
         public int CashierId { get; set; }
         public Cashier Cashier { get; set; }

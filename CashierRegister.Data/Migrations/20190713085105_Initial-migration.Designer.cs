@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CashierRegister.Data.Migrations
 {
     [DbContext(typeof(CashierRegisterContext))]
-    [Migration("20190707060358_Initial-Creation")]
-    partial class InitialCreation
+    [Migration("20190713085105_Initial-migration")]
+    partial class Initialmigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -36,6 +36,10 @@ namespace CashierRegister.Data.Migrations
 
             modelBuilder.Entity("CashierRegister.Data.Entities.Models.CashRegisterCashier", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
                     b.Property<int>("CashRegisterId");
 
                     b.Property<int>("CashierId");
@@ -44,7 +48,9 @@ namespace CashierRegister.Data.Migrations
 
                     b.Property<DateTime>("StartOfShift");
 
-                    b.HasKey("CashRegisterId", "CashierId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("CashRegisterId");
 
                     b.HasIndex("CashierId");
 
@@ -106,11 +112,7 @@ namespace CashierRegister.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("CashRegisterCashierCashRegisterId");
-
-                    b.Property<int?>("CashRegisterCashierCashierId");
-
-                    b.Property<int>("CashRegisterCashierId");
+                    b.Property<int?>("CashRegisterCashierId");
 
                     b.Property<DateTime>("DateTimeCreated");
 
@@ -124,7 +126,7 @@ namespace CashierRegister.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CashRegisterCashierCashRegisterId", "CashRegisterCashierCashierId");
+                    b.HasIndex("CashRegisterCashierId");
 
                     b.ToTable("Receipts");
                 });
@@ -135,9 +137,13 @@ namespace CashierRegister.Data.Migrations
 
                     b.Property<Guid>("ReceiptId");
 
+                    b.Property<int>("ProductCount");
+
                     b.Property<int>("ProductDirectPercentageAtCreation");
 
                     b.Property<int>("ProductExcisePercentageAtCreation");
+
+                    b.Property<int>("ProductPriceAtCreation");
 
                     b.HasKey("ProductId", "ReceiptId");
 
@@ -193,7 +199,7 @@ namespace CashierRegister.Data.Migrations
                 {
                     b.HasOne("CashierRegister.Data.Entities.Models.CashRegisterCashier", "CashRegisterCashier")
                         .WithMany()
-                        .HasForeignKey("CashRegisterCashierCashRegisterId", "CashRegisterCashierCashierId");
+                        .HasForeignKey("CashRegisterCashierId");
                 });
 
             modelBuilder.Entity("CashierRegister.Data.Entities.Models.ReceiptProduct", b =>

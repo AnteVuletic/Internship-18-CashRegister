@@ -64,21 +64,23 @@ namespace CashierRegister.Web
 
             services.AddSingleton(Configuration);
             services.AddSingleton<JwtHelper>();
-
-            var domainAssemblyReflection = Assembly.GetEntryAssembly()
-                ?.GetReferencedAssemblies()
+            
+            var domainAssemblyReflection = typeof(Startup).GetTypeInfo().Assembly
+                .GetReferencedAssemblies()
                 .First(asm => asm.FullName.Contains("CashierRegister.Domain"));
-
-            var actualAssembly = Assembly.Load(domainAssemblyReflection?.Name)
-                .GetTypes()
-                .Where(type =>
-                    type.IsClass &&
-                    type.IsPublic &&
-                    type.Namespace.Contains("CashierRegister.Domain.Repositories.Implementations"));
-
-            foreach (var type in actualAssembly)
+            if (domainAssemblyReflection != null)
             {
-                services.AddScoped(type.GetInterface($"I{type.Name}"), type);
+                var actualAssembly = Assembly.Load(domainAssemblyReflection?.Name)
+                    .GetTypes()
+                    .Where(type =>
+                        type.IsClass &&
+                        type.IsPublic &&
+                        type.Namespace.Contains("CashierRegister.Domain.Repositories.Implementations"));
+
+                foreach (var type in actualAssembly)
+                {
+                    services.AddScoped(type.GetInterface($"I{type.Name}"), type);
+                }
             }
 
             // In production, the React files will be served from this directory

@@ -9,5 +9,6 @@ namespace CashierRegister.Infrastructure.DataTransferObjects
     {
         public Product Product { get; set; }
         public Tax ProductTax { get; set; }
+        public int? ProductCount { get; set; }
     }
 }

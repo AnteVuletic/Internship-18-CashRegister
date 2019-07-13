@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace CashierRegister.Data.Migrations
 {
-    public partial class InitialCreation : Migration
+    public partial class Initialmigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -68,6 +68,8 @@ namespace CashierRegister.Data.Migrations
                 name: "CashRegisterCashiers",
                 columns: table => new
                 {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CashierId = table.Column<int>(nullable: false),
                     CashRegisterId = table.Column<int>(nullable: false),
                     StartOfShift = table.Column<DateTime>(nullable: false),
@@ -75,7 +77,7 @@ namespace CashierRegister.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CashRegisterCashiers", x => new { x.CashRegisterId, x.CashierId });
+                    table.PrimaryKey("PK_CashRegisterCashiers", x => x.Id);
                     table.ForeignKey(
                         name: "FK_CashRegisterCashiers_CashRegisters_CashRegisterId",
                         column: x => x.CashRegisterId,
@@ -122,9 +124,7 @@ namespace CashierRegister.Data.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     DateTimeCreated = table.Column<DateTime>(nullable: false),
-                    CashRegisterCashierId = table.Column<int>(nullable: false),
-                    CashRegisterCashierCashRegisterId = table.Column<int>(nullable: true),
-                    CashRegisterCashierCashierId = table.Column<int>(nullable: true),
+                    CashRegisterCashierId = table.Column<int>(nullable: true),
                     ExciseTaxAtCreation = table.Column<int>(nullable: false),
                     DirectTaxAtCreation = table.Column<int>(nullable: false),
                     PreTaxPriceAtCreation = table.Column<int>(nullable: false),
@@ -134,10 +134,10 @@ namespace CashierRegister.Data.Migrations
                 {
                     table.PrimaryKey("PK_Receipts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Receipts_CashRegisterCashiers_CashRegisterCashierCashRegisterId_CashRegisterCashierCashierId",
-                        columns: x => new { x.CashRegisterCashierCashRegisterId, x.CashRegisterCashierCashierId },
+                        name: "FK_Receipts_CashRegisterCashiers_CashRegisterCashierId",
+                        column: x => x.CashRegisterCashierId,
                         principalTable: "CashRegisterCashiers",
-                        principalColumns: new[] { "CashRegisterId", "CashierId" },
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -147,6 +147,8 @@ namespace CashierRegister.Data.Migrations
                 {
                     ReceiptId = table.Column<Guid>(nullable: false),
                     ProductId = table.Column<Guid>(nullable: false),
+                    ProductPriceAtCreation = table.Column<int>(nullable: false),
+                    ProductCount = table.Column<int>(nullable: false),
                     ProductExcisePercentageAtCreation = table.Column<int>(nullable: false),
                     ProductDirectPercentageAtCreation = table.Column<int>(nullable: false)
                 },
@@ -166,6 +168,11 @@ namespace CashierRegister.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CashRegisterCashiers_CashRegisterId",
+                table: "CashRegisterCashiers",
+                column: "CashRegisterId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CashRegisterCashiers_CashierId",
@@ -188,9 +195,9 @@ namespace CashierRegister.Data.Migrations
                 column: "ReceiptId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Receipts_CashRegisterCashierCashRegisterId_CashRegisterCashierCashierId",
+                name: "IX_Receipts_CashRegisterCashierId",
                 table: "Receipts",
-                columns: new[] { "CashRegisterCashierCashRegisterId", "CashRegisterCashierCashierId" });
+                column: "CashRegisterCashierId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
